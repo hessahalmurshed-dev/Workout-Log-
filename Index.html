@@ -1,0 +1,1698 @@
+<!DOCTYPE html>
+<html lang="ar" dir="rtl">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+<meta name="apple-mobile-web-app-capable" content="yes">
+<meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
+<meta name="apple-mobile-web-app-title" content="خطة حصه 🏀">
+<meta name="theme-color" content="#1c1c1e">
+<title>خطة حصه 🏀</title>
+<style>
+*{margin:0;padding:0;box-sizing:border-box;-webkit-tap-highlight-color:transparent;}
+body{background:#0f1923;color:#0a1a2e;font-family:system-ui,-apple-system,sans-serif;font-size:14px;}
+input,select,button{font-family:inherit;}
+input[type=number]::-webkit-inner-spin-button{-webkit-appearance:none;}
+
+:root{
+  --bg:#0f1923;       /* الخلفية الزرقاء الداكنة */
+  --s1:#192638;       /* كروت */
+  --s2:#213245;       /* رؤوس الأقسام */
+  --s3:#2a3f58;       /* صفوف بديلة */
+  --border:#304e6a;
+  --text:#0a1a2e;     /* نص داكن على الكروت الفاتحة */
+  --sub:#1a3a5a;      /* نص ثانوي داكن */
+  --muted:#3a6a9a;    /* نص خافت */
+  --accent:#a8dcff;
+  --accentL:#d0f0ff;
+  --green:#6de89a;
+  --warn:#ffb870;
+  --red:#ff8888;
+  --signal:#e06030;
+}
+
+/* ── TOPBAR ── */
+.topbar{background:#0c1520;border-bottom:1px solid var(--border);height:50px;padding:0 14px;display:flex;align-items:center;position:sticky;top:0;z-index:100;gap:10px;}
+.topbar-back{background:none;border:none;color:var(--accent);font-size:13px;cursor:pointer;padding:0;display:none;}
+.topbar-title{font-size:14px;font-weight:700;color:#a8e0ff;flex:1;}
+.topbar-badge{padding:3px 10px;border-radius:20px;font-size:10px;font-weight:700;color:#fff;}
+
+/* ── PAIN BANNER ── */
+.pain-banner{background:#0c1828;border-bottom:2px solid var(--signal);padding:9px 14px;cursor:pointer;}
+.pain-head{color:var(--warn);font-size:11px;font-weight:700;display:flex;align-items:center;gap:6px;}
+.pain-body{display:none;padding-top:8px;}
+.pain-body.open{display:block;}
+.pain-item{display:flex;gap:9px;padding:5px 0;border-bottom:1px solid #1e3048;font-size:11px;color:#c8e4f8;line-height:1.6;}
+.pain-item:last-child{border:none;}
+.pain-dot{width:9px;height:9px;border-radius:50%;flex-shrink:0;margin-top:4px;}
+
+/* ── MOBILE NAV ── */
+.mobile-nav{background:#0c1520;position:sticky;top:50px;z-index:90;border-bottom:1px solid var(--border);}
+.phase-row{display:flex;border-bottom:1px solid var(--border);}
+.phase-btn{flex:1;background:transparent;border:none;cursor:pointer;padding:8px 2px;color:var(--muted);font-size:11px;border-bottom:2px solid transparent;transition:all .15s;line-height:1.3;}
+.phase-btn.active{color:#a8e0ff;border-bottom-color:#a8e0ff;}
+.phase-btn .pb-sub{font-size:8px;display:block;color:var(--muted);margin-top:1px;}
+.week-row{display:flex;overflow-x:auto;scrollbar-width:none;padding:7px 12px;gap:6px;}
+.week-row::-webkit-scrollbar{display:none;}
+.week-pill{flex-shrink:0;background:#1e3a54;border:1px solid #4a80b0;cursor:pointer;padding:5px 13px;border-radius:20px;font-size:11px;color:#c0e8ff;white-space:nowrap;transition:all .15s;font-weight:600;}
+.week-pill.active{background:linear-gradient(135deg,#1a5a8a,#2a7ab0);color:#fff;border-color:transparent;box-shadow:0 2px 8px #2a7ab044;}
+.week-nav{display:flex;justify-content:space-between;align-items:center;padding:0 12px 7px;}
+.nav-arr{background:var(--s2);border:1px solid var(--border);cursor:pointer;color:var(--sub);padding:5px 14px;border-radius:6px;font-size:14px;transition:all .12s;}
+.nav-arr:disabled{opacity:.25;cursor:default;}
+.nav-lbl{font-size:10px;color:var(--accentL);text-align:center;font-weight:600;}
+
+/* ── MAIN ── */
+.main{padding:10px 12px 80px;max-width:700px;margin:0 auto;}
+.week-view{display:none;}
+.week-view.active{display:block;}
+
+/* ── WEEK HEADER ── */
+.wk-hdr{background:#c8e4f4;border-radius:8px;padding:4px 8px;margin-bottom:4px;border:1px solid var(--border);}
+.wk-top{display:flex;justify-content:space-between;align-items:center;margin-bottom:2px;}
+.wk-num{display:none;}
+.wk-title{font-size:11px;font-weight:800;color:var(--text);}
+.wk-badge{padding:1px 5px;border-radius:4px;font-size:8px;font-weight:700;color:#fff;white-space:nowrap;}
+.wk-goal{display:none;}
+.wk-rpe{display:inline-block;margin-top:1px;font-size:8px;color:#f0c060;background:#2a3a18;padding:1px 6px;border-radius:20px;border:1px solid #4a5830;font-weight:700;}
+
+/* ── TESTS BAR ── */
+.tests-bar{background:#162a20;border-right:3px solid var(--green);border-radius:8px;padding:9px 13px;margin-bottom:6px;font-size:11px;color:#a0f0c0;line-height:1.8;}
+.tests-bar strong{color:#e0fff0;}
+
+/* ── DAY TABS ── */
+.day-tabs{display:flex;gap:3px;overflow-x:auto;scrollbar-width:none;margin-bottom:6px;}
+.day-tabs::-webkit-scrollbar{display:none;}
+.day-tab{background:#b0d8f0;border:1px solid var(--border);cursor:pointer;padding:8px 4px;font-size:11px;color:#1a3a5a;flex:1;min-width:0;transition:all .15s;white-space:nowrap;border-radius:8px;font-weight:600;}
+.day-tab.active{color:#fff;font-weight:700;background:linear-gradient(135deg,#1a5a8a,#2a7ab0);border-color:transparent;box-shadow:0 2px 6px #2a7ab033;}
+.day-tab.rest.active{background:linear-gradient(135deg,#1a4a2a,#2a7a4a);border-color:transparent;box-shadow:0 2px 6px #2a7a4a33;}
+.day-tab .dt-sub{font-size:8px;display:block;opacity:.7;margin-top:1px;}
+.day-content{display:none;}
+.day-content.active{display:block;}
+
+/* ── PROGRESS ── */
+.prog-wrap{background:#c0dff0;border-radius:8px;padding:8px 13px;margin-bottom:4px;}
+.prog-lbl{font-size:10px;color:var(--muted);margin-bottom:4px;}
+.prog-bar{background:var(--border);height:3px;border-radius:2px;overflow:hidden;}
+.prog-fill{background:var(--green);height:100%;border-radius:2px;transition:width .3s;width:0%;}
+
+/* ── CONDITION ── */
+.cond-box{background:#fff3d0;border-right:3px solid var(--warn);border-radius:0 8px 8px 0;padding:8px 12px;margin-bottom:4px;font-size:11px;color:#7a4a00;line-height:1.8;}
+
+/* ── SECTION COLORS (pop theme) ── */
+:root{
+  --c-warmup:#f97316;   --c-warmup-bg:#f9731612;
+  --c-ankle:#2dd4bf;    --c-ankle-bg:#2dd4bf12;
+  --c-strength:#f472b6; --c-strength-bg:#f472b612;
+  --c-plyo:#c084fc;     --c-plyo-bg:#c084fc12;
+  --c-speed:#a3e635;    --c-speed-bg:#a3e63512;
+  --c-power:#fb7185;    --c-power-bg:#fb718512;
+  --c-bball:#fbbf24;    --c-bball-bg:#fbbf2412;
+  --c-cardio:#38bdf8;   --c-cardio-bg:#38bdf812;
+  --c-recovery:#a78bfa; --c-recovery-bg:#a78bfa12;
+  --c-mobility:#6ee7b7; --c-mobility-bg:#6ee7b712;
+  --c-descend:#f59e42;  --c-descend-bg:#f59e4212;
+  --c-foot:#2dd4bf;     --c-foot-bg:#2dd4bf12;
+}
+
+/* ── SECTION ── */
+.sec-wrap{margin-bottom:6px;}
+.sec-head{padding:10px 14px;display:flex;align-items:center;gap:9px;font-size:12px;font-weight:700;cursor:pointer;user-select:none;border-radius:10px;border:1px solid transparent;transition:all .15s;}
+.sec-head.open{border-radius:10px 10px 0 0;}
+.sec-icon{font-size:16px;flex-shrink:0;}
+.sec-label{flex:1;letter-spacing:.01em;}
+.sec-time{font-size:10px;opacity:.7;margin-right:auto;}
+.sec-arr{font-size:10px;opacity:.6;transition:transform .15s;}
+.sec-arr.open{transform:rotate(180deg);}
+.sec-body{display:none;background:#d8f0ff;border-radius:0 0 10px 10px;overflow:hidden;border:1px solid transparent;border-top:none;}
+.sec-body.open{display:block;}
+
+/* section color variants */
+.sec-warmup .sec-head{background:#1a0a2e;border-color:#e040fb88;color:#e040fb;}
+.sec-warmup .sec-body{border-color:var(--c-warmup)33;}
+.sec-ankle .sec-head{background:#2a0008;border-color:#ff2d5588;color:#ff2d55;}
+.sec-ankle .sec-body{border-color:#ff2d5533;}
+.sec-ankle-after .sec-head{background:#001e1c;border-color:#2dd4bf88;color:#2dd4bf;}
+.sec-ankle-after .sec-body{display:none;background:#d8f0ff;border-radius:0 0 10px 10px;overflow:hidden;border:1px solid #2dd4bf33;border-top:none;}
+.sec-ankle-after .sec-body.open{display:block;}
+.sec-strength .sec-head{background:#2a0020;border-color:#f472b688;color:#f472b6;}
+.sec-strength .sec-body{border-color:var(--c-strength)33;}
+.sec-plyo .sec-head{background:#1a0a30;border-color:#c084fc88;color:#c084fc;}
+.sec-plyo .sec-body{border-color:var(--c-plyo)33;}
+.sec-speed .sec-head{background:#141e00;border-color:#a3e63588;color:#a3e635;}
+.sec-speed .sec-body{border-color:var(--c-speed)33;}
+.sec-power .sec-head{background:#2a0010;border-color:#fb718588;color:#fb7185;}
+.sec-power .sec-body{border-color:var(--c-power)33;}
+.sec-bball .sec-head{background:#1e1600;border-color:#fbbf2488;color:#fbbf24;}
+.sec-bball .sec-body{border-color:var(--c-bball)33;}
+.sec-cardio .sec-head{background:#001828;border-color:#38bdf888;color:#38bdf8;}
+.sec-cardio .sec-body{border-color:var(--c-cardio)33;}
+.sec-recovery .sec-head{background:#160e2a;border-color:#a78bfa88;color:#a78bfa;}
+.sec-recovery .sec-body{border-color:var(--c-recovery)33;}
+.sec-mobility .sec-head{background:#2a1800;border-color:#f9731688;color:#f97316;}
+.sec-mobility .sec-body{border-color:#e040fb33;}
+.sec-check .sec-head{background:#101418;border-color:#94a3b888;color:#94a3b8;}
+.sec-check .sec-body{border-color:var(--c-check)33;}
+.sec-descend .sec-head{background:var(--c-descend-bg);border-color:var(--c-descend)44;color:var(--c-descend);}
+.sec-descend .sec-body{border-color:var(--c-descend)33;}
+.sec-foot .sec-head{background:#1e1a00;border-color:#ffe60088;color:#ffe600;}
+.sec-foot .sec-body{border-color:#ffe60033;}
+
+/* ── EXERCISE ROW ── */
+.ex-row{display:grid;grid-template-columns:1fr auto 36px;align-items:center;border-bottom:1px solid #a0cce8;min-height:50px;background:#d8f0ff;}
+.ex-row:last-child{border-bottom:none;}
+.ex-info{padding:10px 12px 10px 0;}
+.ex-name{font-size:13px;font-weight:600;line-height:1.4;color:#0a1a2e;}
+.ex-desc{font-size:11px;color:var(--sub);margin-top:3px;line-height:1.5;}
+.ex-note-txt{font-size:10px;color:var(--warn);margin-top:2px;}
+.ex-vol{padding:6px 10px;min-width:68px;text-align:center;align-self:stretch;display:flex;flex-direction:column;align-items:center;justify-content:center;gap:2px;border-right:1px solid #a0cce8;border-left:1px solid #a0cce8;}
+.ex-vol-num{font-size:13px;font-weight:800;color:#0a1a2e;}
+.ex-vol-sub{font-size:9px;color:var(--muted);line-height:1.3;}
+.ex-chk{width:36px;display:flex;align-items:center;justify-content:center;align-self:stretch;}
+.ex-chk input[type=checkbox]{width:18px;height:18px;cursor:pointer;accent-color:var(--accent);}
+
+/* ── STRENGTH ROW ── */
+.str-block{border-bottom:1px solid #a0cce8;background:#d8f0ff;}
+.str-block:last-child{border-bottom:none;}
+.str-header{display:grid;grid-template-columns:1fr auto 36px;align-items:stretch;min-height:50px;}
+.str-info{padding:10px 12px 10px 0;}
+.str-name{font-size:13px;font-weight:700;line-height:1.4;color:#0a1a2e;}
+.str-desc{font-size:11px;color:var(--sub);margin-top:3px;}
+.str-note{font-size:10px;color:var(--warn);margin-top:2px;}
+.str-vol{padding:6px 10px;min-width:68px;text-align:center;display:flex;flex-direction:column;align-items:center;justify-content:center;gap:2px;border-right:1px solid #a0cce8;border-left:1px solid #a0cce8;}
+.str-vol-num{font-size:13px;font-weight:800;color:#0a1a2e;}
+.str-vol-sub{font-size:9px;color:var(--muted);line-height:1.3;}
+.str-chk{width:36px;display:flex;align-items:center;justify-content:center;}
+.str-chk input{width:18px;height:18px;cursor:pointer;accent-color:var(--accent);}
+
+/* sets log panel */
+.sets-panel{background:#b8ddf5;border-top:1px solid #a0cce8;padding:8px 12px 8px;}
+/* row1: weight + pills */
+.sp-row1{display:flex;align-items:center;gap:7px;margin-bottom:7px;}
+.wt-inp{background:#eaf6ff;border:1px solid #a0cce8;border-radius:8px;color:#0a1a2e;font-size:13px;font-weight:700;padding:6px 10px;outline:none;width:72px;text-align:center;}
+.wt-inp:focus{border-color:var(--accent);}
+.sp-pills{display:flex;align-items:center;gap:3px;flex-wrap:wrap;}
+.sp-sep{color:var(--border);font-size:14px;margin:0 2px;}
+/* tiny notes */
+.str-note-inp{width:100%;background:transparent;border:none;border-top:1px solid #a0cce8;color:#2a5a7a;font-size:10px;padding:5px 2px 3px;outline:none;margin-top:6px;}
+.str-note-inp::placeholder{color:var(--muted);opacity:.6;}
+.str-note-inp:focus{color:var(--sub);}
+.sets-controls{display:flex;gap:4px;flex-wrap:wrap;margin-bottom:7px;}
+.unit-btn,.metric-btn,.et-btn{font-size:10px;padding:3px 8px;border-radius:20px;cursor:pointer;border:1px solid var(--border);background:#a8d0ee;color:#1a3a5a;font-weight:600;}
+.unit-btn.on{border-color:#1a6aaa;background:#1a6aaa;color:#fff;}
+.et-btn.on{border-color:#1a8a6a;background:#1a8a6a;color:#fff;}
+.metric-btn.on{border-color:#6060c0;background:#6060c0;color:#fff;}
+.sets-count-row{display:flex;align-items:center;gap:6px;margin-bottom:7px;}
+.sets-lbl{font-size:11px;color:var(--muted);}
+.sn-btn{width:27px;height:27px;border-radius:7px;border:1px solid #a0cce8;background:#a8d0ee;color:#1a3a5a;cursor:pointer;font-size:12px;font-weight:700;}
+.sn-btn.on{border-color:#1a6aaa;background:#1a6aaa;color:#fff;}
+/* set col headers: Reps | Sets | ✓ */
+.set-col-hdr{display:grid;grid-template-columns:22px 1fr 1fr 30px;gap:5px;font-size:9px;color:var(--muted);text-align:center;margin-bottom:3px;}
+.set-row{display:grid;grid-template-columns:22px 1fr 1fr 30px;gap:5px;margin-bottom:5px;align-items:center;}
+.set-row:last-child{margin-bottom:0;}
+.set-n{text-align:center;font-size:11px;color:var(--muted);font-weight:700;}
+.set-inp{background:#eaf6ff;border:1px solid #a0cce8;border-radius:7px;color:#0a1a2e;font-size:12px;padding:6px 4px;outline:none;text-align:center;width:100%;}
+.set-inp.done{background:#c8f0d8;border-color:#3a9a5a;}
+.set-done{width:30px;height:30px;border-radius:7px;border:1px solid var(--border);background:var(--s2);color:var(--muted);cursor:pointer;font-size:13px;display:flex;align-items:center;justify-content:center;}
+.set-done.done{background:var(--green);border-color:var(--green);color:#fff;}
+
+/* ── NOTE / EXIT ── */
+.note-bar{background:#daf0ff;border-right:3px solid #2a80c0;border-radius:0 8px 8px 0;padding:8px 12px;font-size:11px;color:#0a2a4a;line-height:1.75;margin-top:4px;}
+.exit-bar{background:#d8eef8;border-radius:8px;padding:9px 13px;font-size:11px;color:#1a3a5a;line-height:1.75;margin-top:4px;}
+
+/* ── MARK DONE BUTTON ── */
+.mark-done-btn{display:block;width:100%;margin-top:12px;padding:14px;border-radius:12px;font-size:14px;font-weight:700;cursor:pointer;border:none;transition:all .2s;letter-spacing:.02em;}
+.mark-done-btn.idle{background:linear-gradient(135deg,#1a5a8a,#2a7ab0);color:#fff;}
+.mark-done-btn.done{background:#0d2820;border:2px solid var(--green);color:var(--green);}
+
+/* ── WEEK DATE INPUT ── */
+.wk-date-row{display:flex;gap:5px;align-items:center;margin-bottom:6px;}
+.wk-date-row label{font-size:10px;color:var(--muted);white-space:nowrap;}
+.wk-date-inp{background:#fff;border:1px solid #7ab8e0;border-radius:6px;padding:3px 6px;color:#0a1a2e;font-size:10px;outline:none;flex:1;color-scheme:light;}
+
+/* ── COL HEADERS label ── */
+.sec-col-hdr{display:grid;grid-template-columns:1fr auto 36px;font-size:9px;color:#2a5a7a;padding:4px 0 3px;border-bottom:1px solid #a0cce8;background:#c0e4f8;}
+.sch-vol{min-width:64px;text-align:center;border-right:1px solid var(--border);padding-right:10px;}
+.sch-chk{width:36px;text-align:center;border-right:1px solid var(--border);}
+
+.sec-core .sec-head{background:#0a1628;border-color:#1a4a8888;color:#4a90d8;}
+.sec-core .sec-body{display:none;background:#d8f0ff;border-radius:0 0 10px 10px;overflow:hidden;border:1px solid #e8f4ff33;border-top:none;}
+.sec-core .sec-body.open{display:block;}
+</style>
+</head>
+<body>
+
+<!-- TOPBAR -->
+<div class="topbar">
+  <button class="topbar-back" id="topBack" onclick="prevView()">←</button>
+  <div class="topbar-title" id="topTitle">حصه 🏀</div>
+  <div class="topbar-badge" id="topBadge" style="display:none"></div>
+</div>
+
+<!-- PAIN BANNER -->
+<div class="pain-banner" onclick="this.querySelector('.pain-body').classList.toggle('open')">
+  <div class="pain-head">⚠️ قواعد الألم والانتفاخ — اضغطي للتفاصيل</div>
+  <div class="pain-body">
+    <div class="pain-item"><div class="pain-dot" style="background:#5fa870"></div><div>ألم 0–2 / لا انتفاخ: كملي التمرين عادي.</div></div>
+    <div class="pain-item"><div class="pain-dot" style="background:#d4894a"></div><div>ألم 3 أو خوف خفيف: خففي القفز والسرعة 30–50% وركّزي على الجودة.</div></div>
+    <div class="pain-item"><div class="pain-dot" style="background:#c94f1a"></div><div>ألم 4 أو انتفاخ واضح أو تغير المشي: ألغي القفز والسرعة — Recovery + Mobility فقط.</div></div>
+    <div class="pain-item"><div class="pain-dot" style="background:#8b0000"></div><div>إحساس shift / تنميل / ضعف متكرر: وقّفي وراجعي أخصائي.</div></div>
+  </div>
+</div>
+
+<!-- RULES BANNER -->
+<div class="pain-banner" style="border-bottom-color:#5ba3d0;" onclick="this.querySelector('.pain-body').classList.toggle('open')">
+  <div class="pain-head" style="color:#7ec8f0;">📋 قواعد ثابتة — الشوز والتقدم والتخفيف</div>
+  <div class="pain-body">
+    <div class="pain-item"><div class="pain-dot" style="background:#f97316"></div><div><strong style="color:#fff">قاعدة الشوز:</strong> أي نزول من ارتفاع، Drop Landing، Step-down، Lateral Bound — بالشوز فقط. الحافي مسموح فقط في: Short Foot، Toe Yoga، Tripod Foot، Knee-to-Wall، Single-Leg Balance الخفيف.</div></div>
+    <div class="pain-item"><div class="pain-dot" style="background:#5dd88a"></div><div><strong style="color:#fff">قاعدة التقدم:</strong> ارفعي الارتفاع أو السرعة فقط إذا: ألم 0–2/10، لا انتفاخ، المشي طبيعي يومين، ما تهربين لليمين، تقدرين تثبتين الهبوط 3 ثواني.</div></div>
+    <div class="pain-item"><div class="pain-dot" style="background:#f0a850"></div><div><strong style="color:#fff">ألم 3/10 أو خوف:</strong> خففي السرعة/النط 30–50%، خلي النزول أبطأ وأقل ارتفاع.</div></div>
+    <div class="pain-item"><div class="pain-dot" style="background:#e06030"></div><div><strong style="color:#fff">ألم 4/10 أو انتفاخ:</strong> ألغِي القفز والسرعة — فقط Recovery + Mobility + Foot Control.</div></div>
+    <div class="pain-item"><div class="pain-dot" style="background:#7ec8f0"></div><div><strong style="color:#fff">First Step Cues:</strong> Push the floor away · أول خطوة قصيرة وقوية · جسمك مائل للأمام · ركزي على أول خطوتين · في Lateral Start ادفعي من الرجل الخارجية.</div></div>
+    <div class="pain-item"><div class="pain-dot" style="background:#c084fc"></div><div><strong style="color:#fff">Landing Cues:</strong> انزلي بهدوء · ركبة فوق ثاني/ثالث إصبع · الحوض ثابت · القوس لا ينهار · وزنك متوازن لا تهربين لليمين · Hold 3 ثواني بعد الهبوط.</div></div>
+  </div>
+</div>
+
+
+<div class="mobile-nav">
+  <div class="phase-row">
+    <button class="phase-btn active" id="pbtn-1" onclick="jumpPhase(1)">P1<span class="pb-sub">تأسيس</span></button>
+    <button class="phase-btn" id="pbtn-2" onclick="jumpPhase(2)">P2<span class="pb-sub">قوة</span></button>
+    <button class="phase-btn" id="pbtn-3" onclick="jumpPhase(3)">P3<span class="pb-sub">باور</span></button>
+    <button class="phase-btn" id="pbtn-4" onclick="jumpPhase(4)">P4<span class="pb-sub">أداء</span></button>
+    <button class="phase-btn" id="pbtn-5" onclick="jumpPhase(5)">P5<span class="pb-sub">deload</span></button>
+  </div>
+  <div class="week-row" id="weekRow"></div>
+  <div class="week-nav">
+    <button class="nav-arr" id="prevBtn" onclick="prevWeek()">→</button>
+    <div class="nav-lbl" id="navLbl">أسبوع 1 / 8</div>
+    <button class="nav-arr" id="nextBtn" onclick="nextWeek()">←</button>
+  </div>
+</div>
+
+<div class="main" id="mainContent"></div>
+
+<script>
+// ════════════════════════════════════════════════════
+// DATA
+// ════════════════════════════════════════════════════
+
+// ex(name, desc, sets, vol, note, isStrength)
+// isStrength=true → shows sets-log panel
+function ex(name,desc,sets,vol,note,isStr){
+  return{name,desc:desc||'',sets:sets||'',vol:vol||'',note:note||'',isStr:!!isStr};
+}
+function str(name,desc,sets,vol,note){return ex(name,desc,sets,vol,note,true);}
+
+// ── Shared ──
+const WU_LOWER=[
+  ex('دراجة أو مشي سريع','تنشيط عام','1','5 دق'),
+  ex('Glute Bridge','رفع الحوض مع ضغط المؤخرة','2','12'),
+  ex('Bodyweight Squat','ببطء — تحكم كامل','2','8'),
+  ex('Leg Swings','أمام/خلف + جانبي','—','10 لكل'),
+  ex('Lateral Band Walk','بند على الركبتين','2','10 لكل'),
+];
+const WU_SPEED=[
+  ex('Jog خفيف','','1','5 دق'),
+  ex('A-March','رفع الركبة بإيقاع','2','15m'),
+  ex('A-Skip','A-march + قفزة','2','15m'),
+  ex('Side Shuffle','تحريك جانبي','2','15m'),
+  ex('Build-up Run','60% → تدريجياً','2–3','20m'),
+];
+const WU_BBALL=[
+  ex('Jog خفيف','','1','5 دق'),
+  ex('A-Skip','','2','15m'),
+  ex('Side Shuffle','','2','15m'),
+  ex('Backpedal','ركض للخلف','2','15m'),
+  ex('Build-up Sprint','تدريجي','2–3','15m'),
+];
+const WU_UPPER=[
+  ex('Row Machine أو مشي سريع','','1','5 دق'),
+  ex('Band Pull-Apart','افردي للجانبين','2','15'),
+  ex('Wall Slides','ظهر الكفين على الجدار','2','10'),
+  ex('Scap Push-up','في البلانك — حرّكي لوحي الكتف','2','8–10'),
+  ex('Arm Circles','دوائر للأمام والخلف','—','10 لكل'),
+];
+const ANK_LOWER=[
+  ex('Knee-to-Wall','10–15 سم من الجدار — ادفعي الركبة دون رفع الكعب','3','10 لكل','قيسي المسافة أسبوعياً'),
+  ex('Banded Ankle Dorsiflexion','بند خلف الكاحل','2','12 لكل'),
+  ex('Tibialis Raise','ظهر للجدار — ارفعي مقدمة القدم','2','15'),
+  ex('Single-Leg Balance','وقفة على رجل واحدة','2','30ث لكل'),
+];
+const ANK_SPEED=[
+  ex('Knee-to-Wall','','3','10 لكل'),
+  ex('Tibialis Raise','','2','15'),
+  ex('Single-Leg Balance with Reach','وقفة + مد القدم','2','20ث لكل'),
+  ex('Pogo Jumps خفيف','فقط إذا لا ألم','2','10','إذا فيه ألم اتركيه'),
+];
+const ANK_BBALL=[
+  ex('Knee-to-Wall','','3','10 لكل'),
+  ex('Banded Ankle Dorsiflexion','','2','12 لكل'),
+  ex('Single-Leg Balance with Reach','','2','20ث لكل'),
+  ex('Pogo Jumps خفيف','فقط إذا لا ألم','2','10–12'),
+];
+const ANK_UPPER_L=[
+  ex('Knee-to-Wall','','2','10 لكل'),
+  ex('Tibialis Raise','','2','15'),
+  ex('Single-Leg Balance','','2','30ث لكل'),
+  ex('Toe Yoga','افردي أصابع القدم ثم اطويها','2','10'),
+];
+const ANK_FULL=[
+  ex('Knee-to-Wall','','3','10 لكل'),
+  ex('Banded Ankle Dorsiflexion','','2','12 لكل'),
+  ex('Tibialis Raise','','3','15'),
+  ex('Bent Knee Soleus Raise','ثني الركبة — يستهدف الـ Soleus','3','12'),
+  ex('Single-Leg Balance','','3','30ث'),
+  ex('Toe Yoga','','2','10'),
+  ex('Short Foot','اضغطي باطن قدمك للكعب دون تحريك الأصابع','2','8'),
+];
+const ANK_AFT_LOWER=[
+  ex('Short Foot','','2','8 لكل'),
+  ex('Toe Yoga','','2','10'),
+  ex('Calf Stretch خفيف','يد على الجدار — رجل خلف مستقيمة','2','30ث'),
+  ex('Knee-to-Wall','ختام قياس','1','10 لكل'),
+];
+const ANK_AFT_SPEED=[
+  ex('Single-Leg Calf Raise ببطء','ارفعي بكلتا الرجلين ثم انزلي على واحدة','2','10–12 لكل'),
+  ex('Short Foot','','2','8 لكل'),
+  ex('Face Pull / Band Pull-Apart','','2','15'),
+  ex('Band External Rotation','كوع ملصق — دوري الكف للخارج','2','15'),
+  ex('Serratus Wall Slide','','2','12'),
+];
+const ANK_AFT_BBALL=[
+  ex('Single-Leg Calf Raise ببطء','','2','10–12'),
+  ex('Short Foot','','2','8'),
+  ex('Couch Stretch','ركبة على الأرض — ورك للأمام','2','30ث لكل'),
+  ex('Calf Stretch','','2','30ث'),
+];
+const ANK_AFT_UPPER=[
+  ex('Bent Knee Soleus Raise','','2','12'),
+  ex('Toe Yoga','','2','10'),
+  ex('Open Book','مستلقية على جنبك — دوري الكتف للخلف','2','8 لكل'),
+  ex('Face Pull / Band Pull-Apart','','2','15'),
+  ex('Band External Rotation','','2','15'),
+  ex('Serratus Wall Slide','','2','12'),
+];
+const MOB_FULL=[
+  ex('90/90 Hip Switches','اجلسي بـ 90/90 وحوّلي الوزن','2','8 لكل'),
+  ex('Adductor Rockback','على الركبتين — مدّي رجل جانباً','2','10'),
+  ex('Couch Stretch','','2','30ث لكل'),
+  ex('Open Book للظهر','','2','8 لكل'),
+  ex('Calf Stretch خفيف','','2','30ث'),
+];
+const MOB_LIGHT=[
+  ex('90/90 Hip Switches','','2','8'),
+  ex('Open Book','','2','8'),
+  ex("Child's Pose / تنفس هادي",'','—','2–3 دق'),
+];
+const FRI_ANK=[
+  ex('Knee-to-Wall','','2','10 لكل'),
+  ex('Tibialis Raise','','2','15'),
+  ex('Single-Leg Balance','','2','30ث لكل'),
+  ex('Toe Yoga','','2','10'),
+];
+const FRI_CHK=[
+  ex('هل فيه انتفاخ؟','قارني اليسار باليمين','—','—'),
+  ex('هل المشي طبيعي؟','امشي 10 خطوات وراقبي','—','—'),
+  ex('هل النزول من درجة أسهل؟','جربي درجة صغيرة','—','—'),
+  ex('هل فيه كهرباء في القدم؟','إذا تكررت أو معها ضعف — راجعي مختص','—','—','⚠️ مهم'),
+];
+const EXIT='<strong>✅ اليوم ناجح</strong> إذا خلصتيه بدون زيادة ألم أو انتفاخ والمشي طبيعي. <strong>⚠️ إذا ثاني يوم</strong> فيه انتفاخ أو عرج: خلي اليوم التالي Mobility + Recovery فقط.';
+
+
+// ════════════════════════════════════════════════════
+// FOOT CONTROL DATA (per week group)
+// ════════════════════════════════════════════════════
+const FOOT_W12=[
+  ex('Short Foot / Arch Lift','اضغطي باطن قدمك نحو الكعب دون تحريك الأصابع','2','8 لكل رجل'),
+  ex('Toe Yoga','افردي أصابع القدم ثم اطويها واحدة واحدة','2','10 لكل رجل'),
+  ex('Tripod Foot Balance','كعب + تحت الإصبع الكبير + تحت الإصبع الصغير — ثبات','2','20ث لكل رجل'),
+  ex('Slow Calf Raise مع الحفاظ على القوس','ارفعي ببطء مع الحفاظ على القوس نشط','2','10'),
+  ex('Tibialis Raise','ظهر للجدار — ارفعي مقدمة القدم','2','15'),
+];
+const FOOT_W34=[
+  ex('Short Foot / Arch Lift','','2','10 لكل رجل'),
+  ex('Toe Yoga','','2','10 لكل رجل'),
+  ex('Tripod Foot Balance with Reach','مدّي يدك أو رجلك للأمام/الجانب بدون انهيار القوس','2','25ث لكل رجل'),
+  ex('Slow Single-Leg Calf Raise مع القوس','ركزي إن الركبة فوق ثاني/ثالث إصبع','2','8 لكل رجل'),
+  ex('Tibialis Raise','','3','15'),
+];
+const FOOT_W56=[
+  ex('Short Foot / Arch Lift','','2','10 لكل رجل'),
+  ex('Toe Yoga','','2','10 لكل رجل'),
+  ex('Tripod Foot Balance Eyes Closed','إذا القوس ينهار مع العيون المغمضة، افتحيها','2','20ث لكل رجل'),
+  ex('Single-Leg Calf Raise مع قوس ثابت','','3','8 لكل رجل'),
+  ex('Tibialis Raise','','3','15'),
+  ex('Balance + Ball Toss أو Reach سريع','','2','20ث لكل رجل'),
+];
+const FOOT_W7=[
+  ex('Short Foot / Arch Lift','','2','10 لكل رجل'),
+  ex('Toe Yoga','','2','10 لكل رجل'),
+  ex('Tripod Foot Balance بعد قفزة خفيفة','نبي القدم تثبت بعد الحركة','2','20ث لكل رجل'),
+  ex('Single-Leg Calf Raise مع قوس ثابت','','3','8 لكل رجل'),
+  ex('Tibialis Raise','','2','15'),
+  ex('Balance + Reactive Reach','','2','20ث لكل رجل'),
+];
+const FOOT_W8=[
+  ex('Short Foot / Arch Lift','أسبوع 8 Deload — الهدف تقييم التحكم والثقة','2','8 لكل رجل'),
+  ex('Toe Yoga','','2','10 لكل رجل'),
+  ex('Tripod Foot Balance','','2','30ث لكل رجل'),
+  ex('Single-Leg Calf Raise مع قوس ثابت','','2','10 لكل رجل'),
+  ex('Tibialis Raise','','2','15'),
+];
+function getFoot(w){
+  if(w<=2) return FOOT_W12;
+  if(w<=4) return FOOT_W34;
+  if(w<=6) return FOOT_W56;
+  if(w===7) return FOOT_W7;
+  return FOOT_W8;
+}
+
+// ════════════════════════════════════════════════════
+// FIRST STEP DATA (per week group)
+// ════════════════════════════════════════════════════
+
+// Sunday First Step
+const FS_SUN_W12=[
+  ex('Athletic Stance Hold','وضع دفاعي ثابت — ركبة مثنية، وزن على المقدمة','2','20ث'),
+  ex('Wall Drive','يد على الجدار — رفع الركبة بقوة','3','15ث'),
+  ex('Falling Start','ميلي للأمام حتى تكادين تقعين ثم انطلقي','4','5m'),
+  ex('Split Stance Push-Off','ادفعي من الرجل الخلفية للانطلاق','2','4 لكل رجل'),
+  ex('Lateral Start خفيف','انطلاق جانبي — ادفعي من الرجل الخارجية','3','5m لكل جهة'),
+  ex('Reactive First Step بسيط','شخص يعطيك إشارة — انطلقي فوراً','4','مرات'),
+];
+const FS_SUN_W34=[
+  ex('Athletic Stance Hold','','3','20ث'),
+  ex('Wall Drive','','3','20ث'),
+  ex('Falling Start','','5','10m'),
+  ex('3-Point Stance Start','يد أرض — انطلقي بأقصى قوة على أول خطوتين','3','10m'),
+  ex('Resisted Sprint خفيف','بند على الوسط — المقاومة تبني قوة الدفع','4','10m'),
+  ex('Reactive First Step','','5–6','مرات'),
+];
+const FS_SUN_W56=[
+  ex('Wall Drive Hold','يد على الجدار — ميلان 45°','3','5ث'),
+  ex('Wall Drive Switches','تبادل الرجلين في Wall Drive','3','5 لكل رجل'),
+  ex('Falling Start','','4','10m'),
+  ex('3-Point Stance Start','','4','10m'),
+  ex('Resisted Sprint','','4','10–15m'),
+  ex('Assisted / Release Sprint','بعد الـ Resisted — الجهاز العصبي يتعلم السرعة القصوى','3','15m'),
+];
+const FS_SUN_W7=[
+  ex('Falling Start سريع','أسرع من الأسابيع السابقة','3','10m'),
+  ex('Resisted Sprint + Release','بمطاط ثم حرري وكملي','4','مرات'),
+  ex('Lateral Start → Sprint','من وضع دفاعي جانبي — انطلقي للأمام','4','10m لكل جهة'),
+  ex('Reactive First Step بإشارة','إشارة يمين/يسار/أمام — انطلقي فوراً','6–8','مرات','⭐ الأهم في الباسكت'),
+  ex('Sprint → Stop → Re-accelerate','','4','مرات'),
+];
+const FS_SUN_W8=[
+  ex('Wall Drive','','2','15ث'),
+  ex('Falling Start','','3','10m'),
+  ex('Lateral Start','','3','5m لكل جهة'),
+  ex('Reactive First Step','','4–5','مرات'),
+  ex('10m Sprint Test','2–3 محاولات — قيسي أو لاحظي الجودة','2–3','مرات'),
+];
+
+// Thursday First Step
+const FS_THU_W12=[
+  ex('Athletic Stance Hold','','2','20ث'),
+  ex('Jab Step → Go','خطوة خداع ثم انطلاق','2','3 لكل جهة'),
+  ex('Lateral Push-Off to Sprint','ادفعي جانبياً ثم سبرنت','3','5m لكل جهة'),
+  ex('Defensive Stance → First Step','من الوضع الدفاعي — انطلقي لأي اتجاه','3','5m لكل جهة'),
+  ex('Reaction First Step','إشارة بسيطة','4','مرات'),
+];
+const FS_THU_W34=[
+  ex('Jab Step → Go','','3','3 لكل جهة'),
+  ex('Lateral Start','','4','5m لكل جهة'),
+  ex('Lateral Push-Off to Sprint','','4','5m لكل جهة'),
+  ex('Defensive Stance → Sprint','','4','مرات'),
+  ex('Reaction First Step يمين/يسار/أمام','','5–6','مرات'),
+];
+const FS_THU_W56=[
+  ex('Jab Step → Go','','3','4 لكل جهة'),
+  ex('Lateral Start → Sprint','','4','5–10m لكل جهة'),
+  ex('Closeout → First Step','ركضة سريعة تجاه خط ثم Stop','4','مرات'),
+  ex('Hesitation → Go','تباطئي ثم انطلقي — خداع التوقيت','3','4 لكل جهة'),
+  ex('Reactive First Step','','6','مرات'),
+];
+const FS_THU_W7=[
+  ex('Jab Step → Go','','3','4 لكل جهة'),
+  ex('Hesitation → First Step','','3','4 لكل جهة'),
+  ex('Closeout → Cut → Sprint','','4','مرات'),
+  ex('Defensive Slide → First Step','','4','مرات لكل جهة'),
+  ex('Reactive First Step يمين/يسار/أمام','','6–8','مرات'),
+];
+const FS_THU_W8=[
+  ex('Jab Step → Go','','2','3 لكل جهة'),
+  ex('Closeout → First Step','','3','مرات'),
+  ex('Shuffle → Sprint','','3','مرات'),
+  ex('Reactive First Step','','4','مرات'),
+];
+function getFS_Sun(w){
+  if(w<=2) return FS_SUN_W12;
+  if(w<=4) return FS_SUN_W34;
+  if(w<=6) return FS_SUN_W56;
+  if(w===7) return FS_SUN_W7;
+  return FS_SUN_W8;
+}
+function getFS_Thu(w){
+  if(w<=2) return FS_THU_W12;
+  if(w<=4) return FS_THU_W34;
+  if(w<=6) return FS_THU_W56;
+  if(w===7) return FS_THU_W7;
+  return FS_THU_W8;
+}
+
+// ════════════════════════════════════════════════════
+// DESCENDING & LANDING DATA (per week group)
+// ════════════════════════════════════════════════════
+
+// Tuesday Main
+const DESC_TUE_W12=[
+  ex('Slow Step-down من 10–15 سم','الشوز مطلوب — نزول 3 ثواني — لمس الأرض خفيف','3','6 لكل رجل','إذا تهربين لليمين قللي الارتفاع فوراً'),
+  ex('Split Squat نزول بطيء 3 ثواني','','3','6 لكل رجل'),
+  ex('Heel-Elevated Soleus Lowering','كعب مرتفع — انزلي ببطء على الكاحل','3','8 لكل رجل'),
+  ex('Snap Down من الأرض بدون ارتفاع','قفزة صغيرة ثم ثبّتي الهبوط بهدوء','3','5','الهبوط أهم من القفز'),
+  ex('Single-Leg Balance بعد النزول','ثبّتي على رجل واحدة بعد كل نزول','2','20ث لكل رجل'),
+];
+const DESC_TUE_W34=[
+  ex('Step-down من 15–20 سم','الشوز مطلوب — ركبة فوق القدم','3','6 لكل رجل','لا ترفعين الارتفاع إذا فيه خوف'),
+  ex('Lateral Step-down','نزول جانبي من البوكس','2','6 لكل جهة'),
+  ex('Drop Landing من 10–15 سم برجلين','هبوط هادي — لا صوت عالي','3','3'),
+  ex('Drop Landing + Hold 3 ثواني','ثبّتي بعد الهبوط 3 ثواني','3','3'),
+  ex('Low Box Jump Up + Step-down ببطء','اطلعي بنط خفيف ثم انزلي ببطء','3','3'),
+];
+const DESC_TUE_W56=[
+  ex('Drop Landing من 20–30 سم','Hold بعد الهبوط 3 ثواني — وزن متوازن','3','3','إذا اليسار مو واثق أو الوزن يروح يمين، ارجعي لارتفاع أقل'),
+  ex('Drop Landing → Small Jump','هبط ثم قفزة صغيرة للأمام','3','3'),
+  ex('Rebound Landing Simulation','محاكاة الهبوط من كرة السلة','3','4'),
+  ex('Lateral Bound → Stick','قفز جانبي + ثبات 3 ثواني','3','3 لكل جهة'),
+  ex('Closeout → Stop → Hold','ركضة سريعة + وقوف ثابت + Hold','4','مرات'),
+];
+const DESC_TUE_W7=[
+  ex('Drop Landing من 20–30 سم','جودة عالية مو حجم عالي','3','3'),
+  ex('Rebound Landing Simulation','','3','4'),
+  ex('Approach Jump → Stick Landing','خطوتان + قفز + ثبات هبوط','3','3','محاكاة كرة السلة'),
+  ex('Lateral Bound → Stick','','3','3 لكل جهة'),
+  ex('Closeout → Stop → Hold','','4','مرات'),
+];
+const DESC_TUE_W8=[
+  ex('Step-down من 15–20 سم','Deload — الهدف تقييم الثقة','2','5 لكل رجل'),
+  ex('Drop Landing منخفض','','2','3'),
+  ex('Single-Leg Hop + Stick خفيف','فقط إذا الكاحل ممتاز','2','3 لكل رجل','⭐ قيسي المسافة'),
+  ex('Hold بعد الهبوط','','2','10ث'),
+  ex('مراقبة الهروب لليمين','راقبي كل تمرين — هل الوزن يتوازن؟','—','خلال التمرين'),
+];
+
+// Friday Optional
+const DESC_FRI_W12=[
+  ex('نزول من درجة صغيرة ببطء','الشوز مطلوب','2','5 لكل رجل'),
+  ex('Step-down منخفض جدًا','','2','5 لكل رجل'),
+  ex('Hold بعد النزول','ثبّتي 10 ثواني','2','10ث لكل رجل'),
+];
+const DESC_FRI_W34=[
+  ex('Step-down 10–15 سم','','2','5 لكل رجل'),
+  ex('Drop Landing منخفض جدًا','','2','3'),
+  ex('Hold بعد الهبوط','','2','10ث'),
+];
+const DESC_FRI_W56=[
+  ex('Step-down من 20 سم','','2','5 لكل رجل'),
+  ex('Drop Landing 15–20 سم','','2','3'),
+  ex('Lateral Step-down','','2','5 لكل جهة'),
+];
+const DESC_FRI_W7=[
+  ex('Step-down 20 سم','','2','5 لكل رجل'),
+  ex('Drop Landing 15–20 سم','','2','3'),
+  ex('Hold 3 ثواني بعد الهبوط','','2','3'),
+];
+const DESC_FRI_W8=[
+  ex('نزول من درجة صغيرة','الهدف: بدون خوف واضح','2','3 لكل رجل'),
+  ex('Step-down 15–20 سم','الهدف: بدون هروب لليمين','2','3 لكل رجل'),
+  ex('Drop Landing منخفض','الهدف: هبوط هادي وثابت','2','3'),
+  ex('Single-Leg Balance بعد النزول','الهدف: 20–30 ثانية بثبات','2','20–30ث لكل رجل'),
+];
+
+// Thursday Landing Micro-dose (W7+W8 only)
+const DESC_THU_W7=[
+  ex('Closeout → Stop','','3','مرات'),
+  ex('Shuffle → Sprint → Stop','','3','مرات'),
+  ex('Small Hop → Stick','قفزة صغيرة + ثبات','2','3'),
+  ex('Lateral Bound خفيف → Stick','','2','3 لكل جهة'),
+];
+const DESC_THU_W8=[
+  ex('Closeout → Stop','','3','مرات'),
+  ex('Shuffle → Sprint → Stop','','3','مرات'),
+  ex('Cut يمين/يسار → Hold','','3','لكل جهة'),
+];
+
+function getDesc_Tue(w){
+  if(w<=2) return DESC_TUE_W12;
+  if(w<=4) return DESC_TUE_W34;
+  if(w<=6) return DESC_TUE_W56;
+  if(w===7) return DESC_TUE_W7;
+  return DESC_TUE_W8;
+}
+function getDesc_Fri(w){
+  if(w<=2) return DESC_FRI_W12;
+  if(w<=4) return DESC_FRI_W34;
+  if(w<=6) return DESC_FRI_W56;
+  if(w===7) return DESC_FRI_W7;
+  return DESC_FRI_W8;
+}
+function getDesc_Thu(w){
+  if(w===7) return DESC_THU_W7;
+  if(w===8) return DESC_THU_W8;
+  return null;
+}
+
+// ── WEEKS ──
+// ═══ CORE BLOCK DATA ═══
+const CORE_SAT = {
+  1: [ex('Dead Bug','مد الذراع والرجل المعاكسة ببطء','3','8 لكل'),ex('Side Plank','','3','25–30ث لكل'),ex('Pallof Press','','3','10 لكل'),ex('Glute Bridge March','','2','10 لكل')],
+  3: [ex('Dead Bug with Band/Weight','','3','8 لكل'),ex('Side Plank with Hip Abduction','','3','8 لكل'),ex('Pallof Press Hold','','3','20ث لكل'),ex('Bear Crawl Hold','','3','20ث')],
+  5: [ex('Pallof Press + Step Out','','3','8 لكل'),ex('Side Plank Row','','3','8 لكل'),ex('Dead Bug Weighted','','3','8 لكل'),ex('Farmer Carry ثقيل','','4','25m')],
+  7: [ex('Pallof Hold + Press','','3','20ث لكل'),ex('Side Plank Row','','3','8 لكل'),ex('Farmer Carry','','3','25m'),ex('Dead Bug','','2','8 لكل')],
+  8: [ex('Dead Bug','','2','8 لكل'),ex('Side Plank','','2','25ث'),ex('Pallof Press','','2','10 لكل')],
+};
+const CORE_WED = {
+  1: [ex('Bird Dog','','3','8 لكل'),ex('Front Plank','','3','30ث'),ex('Suitcase Carry','','3','20m لكل'),ex('Hollow Hold خفيف','','2','15–20ث')],
+  3: [ex('Bird Dog Row خفيف','','3','8 لكل'),ex('Front Plank Shoulder Tap','','3','10 لكل'),ex('Suitcase Carry','','4','20m لكل'),ex('Copenhagen Plank خفيف','','2','20ث لكل')],
+  5: [ex('Half-Kneeling Cable Chop','','3','8 لكل'),ex('Front Plank Shoulder Tap','','3','12 لكل'),ex('Suitcase Carry ثقيل','','4','25m لكل'),ex('Copenhagen Plank','','3','20ث لكل')],
+  7: [ex('Cable Chop','','3','8 لكل'),ex('Suitcase Carry','','3','25m لكل'),ex('Copenhagen Plank','','2','25ث لكل'),ex('Front Plank Shoulder Tap','','2','10 لكل')],
+  8: [ex('Bird Dog','','2','8 لكل'),ex('Suitcase Carry خفيف','','2','20m لكل'),ex('90/90 Breathing','','2','5 أنفاس')],
+};
+const CORE_FRI = {
+  1: [ex('Dead Bug','','2','8 لكل'),ex('Side Plank','','2','20ث لكل'),ex('90/90 Breathing','','2','5 أنفاس')],
+  3: [ex('Dead Bug','','2','10'),ex('Side Plank','','2','25ث'),ex('90/90 Breathing','','2','5 أنفاس')],
+  5: [ex('Dead Bug','','2','8'),ex('Side Plank','','2','30ث'),ex('Breathing','','2','دقيقتين')],
+  7: [ex('Dead Bug','','2','8'),ex('Side Plank','','2','30ث'),ex('Breathing','','2','دقيقتين')],
+  8: [ex('Dead Bug','','2','8'),ex('Side Plank','','2','25ث'),ex('90/90 Breathing','','2','5 أنفاس')],
+};
+function getCore(type, wn){
+  const map = type==='sat'?CORE_SAT : type==='wed'?CORE_WED : CORE_FRI;
+  if(wn<=2) return map[1];
+  if(wn<=4) return map[3];
+  if(wn<=6) return map[5];
+  if(wn===7) return map[7];
+  return map[8];
+}
+const WEEKS={
+1:{phase:1,label:'التأسيس',phaseLabel:'P1 — تأسيس · إعادة الثقة',phaseColor:'#4a9fd4',rpe:'6–7 RPE',
+  goal:'تأسيس كاحل + قوة نظيفة + رجوع الثقة. القفز خفيف والسرعة 70–80%. ركّزي على التكنيك.',
+  showTests:false,
+  days:{
+    sat:{label:'السبت',en:'SAT',
+      cond:'المشي طبيعي، لا انتفاخ جديد، ألم الكاحل 0–2/10.',
+      sections:[
+        {label:'الإحماء',icon:'🔥',time:'10 دق',exercises:WU_LOWER},
+        {label:'كاحل قبل الحديد',icon:'🦶',time:'10 دق',exercises:ANK_LOWER},
+        {label:'Lower A — الحديد',icon:'🏋️',time:'45 دق',exercises:[
+          str('Trap Bar Deadlift أو Romanian DL','ثبات الظهر، شعور بشد خلف الركبة','3','6'),
+          str('Goblet Squat','دمبل أمام الصدر — عميق','3','8','ركّزي على الكاحل الأيسر في القاع'),
+          str('Split Squat','رجل خلفية ثابتة — انزلي ببطء','3','8 لكل'),
+          str('Hamstring Curl','ماكينة أو Nordic مساعدة','3','10'),
+          str('Standing Calf Raise ببطء','نزول بطيء 3 ثواني على اليسار','3','12'),
+          str('Seated Soleus Raise','ركبة منحنية — يستهدف الـ Soleus','3','12'),
+          str('Side Plank','لوحة جانبية','3','30ث لكل'),
+        ]},
+        {label:'Core 🧱',icon:'🧱',time:'10 دق',exercises:getCore('sat',1)},
+        {label:'بعد التمرين — كاحل',icon:'❄️',time:'8 دق',exercises:ANK_AFT_LOWER},
+      ],
+      note:'في السكوات والـ Lunge ركّزي إن الكاحل الأيسر يشتغل بثقة — لا تخلين اليمين ياخذ الحمل.',exit:EXIT},
+    sun:{label:'الأحد',en:'SUN',
+      cond:'المشي طبيعي، لا انتفاخ جديد، ألم الكاحل 0–2/10.',
+      sections:[
+        {label:'إحماء السرعة',icon:'🔥',time:'10 دق',exercises:WU_SPEED},
+        {label:'كاحل قبل السرعة',icon:'🦶',time:'8 دق',exercises:ANK_SPEED},
+        {label:'السرعة والتسارع',icon:'⚡',time:'20 دق',exercises:[
+          ex('Wall Drill','يد على الجدار — رفع الركبة','3','20ث'),
+          ex('A-March','','2','15m'),ex('A-Skip','','2','15m'),
+          ex('10m Sprint','6 مرات بسرعة 70–80%','6','10m','جودة التكنيك أهم من السرعة'),
+          ex('10m Deceleration','ركضي ثم وقّفي في 3 خطوات','4','10m','تحكم بالكاحل عند الوقوف'),
+        ]},
+        {label:'Upper A — الحديد',icon:'🏋️',time:'30 دق',exercises:[
+          str('Landmine Press','ضغط بزاوية — آمن للكتف','3','8 لكل'),
+          str('One-Arm DB Row','ركبة وكف على مقعد','3','10 لكل'),
+          str('Push-up أو DB Bench Press','','3','8'),
+          str('Lat Pulldown','شد للأعلى','3','10'),
+          str('Face Pull','اسحبي البند نحو وجهك','3','12'),
+          str('Serratus Wall Slide','','2','12'),
+          str('Band External Rotation','','2','15'),
+        ]},
+        {label:'بعد التمرين — كاحل وكتف',icon:'❄️',time:'8 دق',exercises:ANK_AFT_SPEED},
+      ],
+      note:'السبرنت بجودة. إذا الكاحل يهرب أو المشي يتغير — وقّفي السرعة واكملي Upper فقط.',exit:EXIT},
+    mon:{label:'الاثنين',en:'MON',
+      cond:'المشي طبيعي، لا انتفاخ جديد، ألم الكاحل 0–2/10.',
+      sections:[
+        {label:'Zone 2 — استشفاء',icon:'🏊',time:'25–35 دق',exercises:[
+          ex('ركض خفيف جداً أو دراجة أو سباحة','المفروض تقدرين تتكلمين. لا HIIT.','1','25–35 دق','هذا يوم تعافي — لا تحوّليه لتمرين قوي'),
+        ]},
+        {label:'كاحل كامل',icon:'🦶',time:'12 دق',exercises:ANK_FULL},
+        {label:'Mobility كامل',icon:'🧘',time:'10 دق',exercises:MOB_FULL},
+      ],
+      note:'هذا اليوم مهم للكاحل والركبة والورك. لا تحوّليه لتمرين قوي.',exit:EXIT},
+    tue:{label:'الثلاثاء',en:'TUE',
+      cond:'المشي طبيعي، لا انتفاخ جديد، ألم الكاحل 0–2/10.',
+      sections:[
+        {label:'الإحماء',icon:'🔥',time:'10 دق',exercises:WU_LOWER},
+        {label:'كاحل قبل النط',icon:'🦶',time:'8 دق',exercises:ANK_LOWER},
+        {label:'Landing / Plyo',icon:'💥',time:'15 دق',exercises:[
+          ex('Snap Down Landing','قفزة صغيرة للأمام + ثبّتي الهبوط','3','5','الهبوط أهم من القفز'),
+          ex('Pogo Jumps خفيف','قفز خفيف على رأس الأصابع','3','15'),
+          ex('Lateral Line Step-over','تخطّي خط جانبياً','2','20ث'),
+          ex('Step-down من بوكس منخفض','انزلي ببطء على الكاحل الأيسر','2','6 لكل'),
+        ]},
+        {label:'Lower B — الحديد',icon:'🏋️',time:'40 دق',exercises:[
+          str('Hip Thrust','رفع الحوض — ضغط المؤخرة في القمة','3','8'),
+          str('Step-down من بوكس','تحكم كامل في النزول','3','8 لكل'),
+          str('Lateral Lunge','خطوة جانبية كبيرة — اجلسي على الكعب','3','8 لكل'),
+          str('Single-Leg RDL','مع دمبل أو بند','3','8 لكل'),
+          str('Seated Soleus Raise','','3','12'),
+          str('Copenhagen Plank خفيف','رجل فوق مقعد — لوحة جانبية','2','20ث لكل'),
+          str('Dead Bug','مد الذراع والرجل المعاكسة ببطء — الظهر لا يرتفع','3','8 لكل'),
+        ]},
+        {label:'بعد التمرين — كاحل',icon:'❄️',time:'8 دق',exercises:ANK_AFT_LOWER},
+      ],
+      note:'الهبوط أهم من القفز. هبوط هادي — ركبة فوق القدم — الحوض ثابت.',exit:EXIT},
+    wed:{label:'الأربعاء',en:'WED',
+      cond:'المشي طبيعي، لا انتفاخ جديد، ألم الكاحل 0–2/10.',
+      sections:[
+        {label:'إحماء علوي',icon:'🔥',time:'8 دق',exercises:WU_UPPER},
+        {label:'كاحل خفيف',icon:'🦶',time:'6 دق',exercises:ANK_UPPER_L},
+        {label:'Upper B — الحديد',icon:'🏋️',time:'30 دق',exercises:[
+          str('Lat Pulldown أو Assisted Pull-up','','3','8'),
+          str('Neutral Grip DB Shoulder Press','قبضة محايدة — أكثر أماناً للكتف','3','8'),
+          str('Cable Row','سحب أفقي','3','10'),
+          str('Incline Push-up','يدان على مقعد مرتفع','3','10'),
+          str('Farmer Carry','حمل دمبلين ثقيلين والمشي','4','20m'),
+          str('Face Pull','','2','15'),
+          str('Band External Rotation','','2','15'),
+        ]},
+        {label:'Core 🧱',icon:'🧱',time:'10 دق',exercises:getCore('wed',1)},
+        {label:'Conditioning / لياقة',icon:'🏀',time:'15 دق',exercises:[
+          ex('Baseline → نص الملعب','أو ركض 100م × 8 — راحة 60ث','8','جولات 65–70%','راحة 60ث بين كل جولة'),
+        ]},
+        {label:'بعد التمرين',icon:'❄️',time:'8 دق',exercises:ANK_AFT_UPPER},
+        {label:'Core 🧱',icon:'🧱',time:'10 دق',exercises:[ex('Bird Dog','على أربع — مد الذراع والرجل المعاكسة','3','8 لكل جهة'),ex('Front Plank','لوحة أمامية','3','30ث'),ex('Suitcase Carry','دمبل بيد — مشي مستقيم','3','20 متر لكل جهة'),ex('Hollow Hold خفيف','ارفعي الرأس والقدمين خفيف','2','15–20ث')]},
+      ],
+      note:'إذا عندك تمرين باسكت قوي بنفس اليوم — شيلي الـ Conditioning أو خليه أخف.',exit:EXIT},
+    thu:{label:'الخميس',en:'THU',
+      cond:'المشي طبيعي، لا انتفاخ جديد، ألم الكاحل 0–2/10.',
+      sections:[
+        {label:'إحماء باسكت',icon:'🔥',time:'10 دق',exercises:WU_BBALL},
+        {label:'كاحل قبل الباور',icon:'🦶',time:'8 دق',exercises:ANK_BBALL},
+        {label:'Power / Change of Direction',icon:'💥',time:'20 دق',exercises:[
+          ex('Med Ball Chest Pass','ارمي الكرة للجدار بقوة','3','5'),
+          ex('Med Ball Rotational Throw','دوران الجذع + رمي جانبي','3','5 لكل'),
+          ex('Low Box Jump + Stick Landing','صندوق منخفض — هبوط ثابت','3','3'),
+          ex('Lateral Bound to Stick','قفز جانبي + ثبات','3','3 لكل'),
+          ex('Defensive Slide to Stop','تحرك دفاعي ثم وقّفي','—','4 مرات'),
+        ]},
+        {label:'Basketball Skills',icon:'🏀',time:'30 دق',exercises:[
+          ex('Ball Handling','مراوغة أساسية','—','10 دق'),
+          ex('Form Shooting','رميات قريبة — الميكانيكا','—','30–50 تصويبة'),
+          ex('Midrange off One Dribble','رمية متوسطة بعد دريبل','3','8 لكل'),
+          ex('Catch & Shoot Spots','5 مواضع × 5 تصويبات','5','5 تصويبات'),
+          ex('Free Throws','رميات حرة','—','20'),
+        ]},
+        {label:'بعد التمرين — كاحل',icon:'❄️',time:'8 دق',exercises:ANK_AFT_BBALL},
+      ],
+      note:'هذا اليوم يبني الثقة في الـ Cut والـ Closeout والهبوط. لا تبالغي إذا الكاحل تعب.',exit:EXIT},
+    fri:{label:'الجمعة',en:'FRI',isRest:true,
+      sections:[
+        {label:'راحة أو مشي خفيف',icon:'🛌',time:'اختياري',exercises:[
+          ex('مشي 20–30 دقيقة','إذا جسمك مرتاح — أو راحة كاملة','—','اختياري','لا جري ولا قفز'),
+        ]},
+        {label:'كاحل خفيف',icon:'🦶',time:'8 دق',exercises:FRI_ANK},
+        {label:'Mobility خفيف',icon:'🧘',time:'8 دق',exercises:MOB_LIGHT},
+        {label:'Core خفيف 🧱',icon:'🧱',time:'اختياري',exercises:getCore('fri',1)},
+        {label:'فحص سريع للكاحل',icon:'📋',time:'2 دق',exercises:FRI_CHK},
+      ],exit:''},
+  }
+},
+
+3:{phase:2,label:'قوة + سرعة',phaseLabel:'P2 — قوة + سرعة أعلى',phaseColor:'#38b8c8',rpe:'7–8 RPE',
+  goal:'نبدأ نرفع القوة والسرعة. الهبوط لازم يبقى هادياً وثابتاً. القفز متوسط والسرعة 80–90%.',
+  showTests:true,
+  days:{
+    sat:{label:'السبت',en:'SAT',cond:'المشي طبيعي، لا انتفاخ جديد، ألم الكاحل 0–2/10.',
+      sections:[
+        {label:'الإحماء',icon:'🔥',time:'10 دق',exercises:WU_LOWER},
+        {label:'كاحل قبل الحديد',icon:'🦶',time:'10 دق',exercises:ANK_LOWER},
+        {label:'Lower A — الحديد',icon:'🏋️',time:'50 دق',exercises:[
+          str('Trap Bar Deadlift','وزن أثقل','4','5'),
+          str('Front Squat أو Goblet Squat ثقيل','','4','6'),
+          str('Rear Foot Elevated Split Squat','رجل خلفية على مقعد — أثقل','3','6 لكل'),
+          str('Hamstring Curl','','3','8'),
+          str('Standing Calf Raise ثقيل','','4','8–10'),
+          str('Seated Soleus Raise','','3','10'),
+          str('Pallof Press','ضغط أفقي ضد البند','3','10 لكل'),
+        ]},
+        {label:'Core 🧱',icon:'🧱',time:'10 دق',exercises:getCore("sat",3)},
+        {label:'Core 🧱',icon:'🧱',time:'10 دق',exercises:getCore('sat',3)},
+        {label:'بعد التمرين — كاحل',icon:'❄️',time:'8 دق',exercises:ANK_AFT_LOWER},
+      ],note:'ركّزي إن الكاحل الأيسر يشتغل بثقة.',exit:EXIT},
+    sun:{label:'الأحد',en:'SUN',cond:'المشي طبيعي، لا انتفاخ جديد، ألم الكاحل 0–2/10.',
+      sections:[
+        {label:'إحماء السرعة',icon:'🔥',time:'10 دق',exercises:WU_SPEED},
+        {label:'كاحل قبل السرعة',icon:'🦶',time:'8 دق',exercises:ANK_SPEED},
+        {label:'السرعة والتسارع',icon:'⚡',time:'25 دق',exercises:[
+          ex('Wall Drill','','3','15ث'),
+          ex('10m Sprint','6 مرات 85%','6','10m'),
+          ex('15m Sprint','4 مرات 85–90%','4','15m'),
+          ex('15m Deceleration','ركضي ثم وقّفي بتحكم','4','15m'),
+          ex('Lateral Shuffle → Sprint','جانبي ثم أمامي','4','—'),
+        ]},
+        {label:'Upper A — الحديد',icon:'🏋️',time:'30 دق',exercises:[
+          str('Landmine Press','','4','6 لكل'),
+          str('One-Arm DB Row','','4','8 لكل'),
+          str('DB Bench Press','','3','8'),
+          str('Lat Pulldown','','3','8'),
+          str('Face Pull','','3','15'),
+          str('Serratus Wall Slide','','2','12'),
+          str('Suitcase Carry','دمبل بيد واحدة — مشي مستقيم','3','20m لكل'),
+        ]},
+        {label:'بعد التمرين — كاحل وكتف',icon:'❄️',time:'8 دق',exercises:ANK_AFT_SPEED},
+      ],note:'السبرنت بجودة. الكاحل يهرب؟ وقّفي السرعة واكملي Upper.',exit:EXIT},
+    mon:{label:'الاثنين',en:'MON',cond:'المشي طبيعي، لا انتفاخ جديد، ألم الكاحل 0–2/10.',
+      sections:[
+        {label:'Zone 2',icon:'🏊',time:'25–35 دق',exercises:[ex('ركض خفيف أو دراجة أو سباحة','تقدرين تتكلمين','1','25–35 دق','لا HIIT')]},
+        {label:'كاحل كامل',icon:'🦶',time:'12 دق',exercises:ANK_FULL},
+        {label:'Mobility كامل',icon:'🧘',time:'10 دق',exercises:MOB_FULL},
+      ],note:'لا تحوّلين الاستشفاء لتمرين قوي.',exit:EXIT},
+    tue:{label:'الثلاثاء',en:'TUE',cond:'المشي طبيعي، لا انتفاخ جديد، ألم الكاحل 0–2/10.',
+      sections:[
+        {label:'الإحماء',icon:'🔥',time:'10 دق',exercises:WU_LOWER},
+        {label:'كاحل قبل النط',icon:'🦶',time:'8 دق',exercises:ANK_LOWER},
+        {label:'Landing / Plyo',icon:'💥',time:'20 دق',exercises:[
+          ex('Countermovement Jump + Stick','انثني ثم اقفزي وثبّتي الهبوط','4','3'),
+          ex('Box Jump منخفض–متوسط','','3','3'),
+          ex('Lateral Bound Stick','قفز جانبي + ثبات','4','3 لكل'),
+          ex('Single-Leg Pogo خفيف','قفز خفيف على رجل واحدة','2','10 لكل'),
+        ]},
+        {label:'Lower B — الحديد',icon:'🏋️',time:'40 دق',exercises:[
+          str('Hip Thrust','','4','6'),
+          str('Step-down 15–20 سم','تحكم أفضل','3','6 لكل'),
+          str('Lateral Lunge','','3','8 لكل'),
+          str('Single-Leg RDL','','3','8 لكل'),
+          str('Seated Soleus Raise','','3','10'),
+          str('Copenhagen Plank','','2','25ث لكل'),
+          str('Dead Bug','','3','8 لكل'),
+        ]},
+        {label:'بعد التمرين — كاحل',icon:'❄️',time:'8 دق',exercises:ANK_AFT_LOWER},
+      ],note:'الهبوط أهم من القفز.',exit:EXIT},
+    wed:{label:'الأربعاء',en:'WED',cond:'المشي طبيعي، لا انتفاخ جديد، ألم الكاحل 0–2/10.',
+      sections:[
+        {label:'إحماء علوي',icon:'🔥',time:'8 دق',exercises:WU_UPPER},
+        {label:'كاحل خفيف',icon:'🦶',time:'6 دق',exercises:ANK_UPPER_L},
+        {label:'Upper B — الحديد',icon:'🏋️',time:'30 دق',exercises:[
+          str('Pulldown أو Assisted Pull-up','','4','6–8'),
+          str('Neutral Grip DB Shoulder Press','','3','8'),
+          str('Cable Row','','3','10'),
+          str('Push-up','','3','8–10'),
+          str('Farmer Carry','','4','20m'),
+          str('Face Pull','','2','15'),
+          str('Band External Rotation','','2','15'),
+        ]},
+        {label:'Core 🧱',icon:'🧱',time:'10 دق',exercises:getCore('wed',3)},
+        {label:'Basketball Conditioning',icon:'🏀',time:'15 دق',exercises:[
+          ex('Basketball Intervals','2 sets: 6 × 15ث hard / 45ث easy','2','sets','راحة 3 دق بين الـ Sets'),
+        ]},
+        {label:'بعد التمرين',icon:'❄️',time:'8 دق',exercises:ANK_AFT_UPPER},
+        {label:'Core 🧱',icon:'🧱',time:'10 دق',exercises:[ex('Bird Dog Row خفيف','سحب البند في وضع Bird Dog','3','8 لكل جهة'),ex('Front Plank Shoulder Tap','الطق الكتف بالتناوب','3','10 لكل جهة'),ex('Suitcase Carry','','4','20 متر لكل جهة'),ex('Copenhagen Plank خفيف','','2','20ث لكل جهة')]},
+      ],note:'إذا عندك تمرين باسكت قوي — شيلي الـ Conditioning.',exit:EXIT},
+    thu:{label:'الخميس',en:'THU',cond:'المشي طبيعي، لا انتفاخ جديد، ألم الكاحل 0–2/10.',
+      sections:[
+        {label:'إحماء باسكت',icon:'🔥',time:'10 دق',exercises:WU_BBALL},
+        {label:'كاحل قبل الباور',icon:'🦶',time:'8 دق',exercises:ANK_BBALL},
+        {label:'Power / COD',icon:'💥',time:'20 دق',exercises:[
+          ex('Defensive Slide to Stop','','—','4 مرات'),
+          ex('Shuffle Sprint →','جانبي ثم سبرنت','—','4 مرات'),
+          ex('45° Cut خفيف–متوسط','قطع بزاوية + توقف وثبات','3','لكل'),
+          ex('Closeout + Backpedal','اغلقي + ارجعي للخلف','—','4 مرات'),
+          ex('Low Drop Landing','من ارتفاع بسيط','3','3'),
+        ]},
+        {label:'Basketball Skills',icon:'🏀',time:'30 دق',exercises:[
+          ex('Ball Handling بتحكم','','—','10 دق'),
+          ex('Finishing بدون احتكاك','يمين ويسار','—','15 دق'),
+          ex('Pull-up Jumper','','4','6 لكل'),
+          ex('Catch & Shoot Spots','','5','5 تصويبات'),
+          ex('Free Throws','','—','25'),
+        ]},
+        {label:'بعد التمرين — كاحل',icon:'❄️',time:'8 دق',exercises:ANK_AFT_BBALL},
+      ],note:'هذا اليوم يبني الثقة في الـ Cut والـ Closeout.',exit:EXIT},
+    fri:{label:'الجمعة',en:'FRI',isRest:true,
+      sections:[
+        {label:'راحة',icon:'🛌',time:'اختياري',exercises:[ex('مشي خفيف 20–30 دق','اختياري','—','—','لا جري ولا قفز')]},
+        {label:'كاحل خفيف',icon:'🦶',time:'8 دق',exercises:FRI_ANK},
+        {label:'Mobility خفيف',icon:'🧘',time:'8 دق',exercises:MOB_LIGHT},
+        {label:'Core خفيف 🧱',icon:'🧱',time:'اختياري',exercises:getCore('fri',3)},
+        {label:'فحص سريع',icon:'📋',time:'2 دق',exercises:FRI_CHK},
+      ],exit:''},
+  }
+},
+
+5:{phase:3,label:'باور',phaseLabel:'P3 — Speed + Power',phaseColor:'#c94f1a',rpe:'7–8.5 RPE',
+  goal:'بداية تحويل القوة إلى باور. أول خطوة، نطّة، تغيير اتجاه. الراحة الكاملة بين السبرنتات أهم من الكمية.',
+  showTests:true,
+  days:{
+    sat:{label:'السبت',en:'SAT',cond:'المشي طبيعي، لا انتفاخ جديد، ألم الكاحل 0–2/10.',
+      sections:[
+        {label:'الإحماء',icon:'🔥',time:'10 دق',exercises:WU_LOWER},
+        {label:'كاحل قبل الحديد',icon:'🦶',time:'10 دق',exercises:ANK_LOWER},
+        {label:'Lower A — الحديد',icon:'🏋️',time:'50 دق',exercises:[
+          str('Trap Bar Deadlift','','4','3–4','وزن أثقل'),
+          str('Front Squat','','4','4'),
+          str('Rear Foot Elevated Split Squat','','3','5 لكل'),
+          str('Nordic Eccentric أو Hamstring Curl','','3','6'),
+          str('Heavy Standing Calf Raise','','4','8'),
+          str('Seated Soleus Raise','','3','10'),
+          str('Pallof Press','','3','10 لكل'),
+        ]},
+        {label:'بعد التمرين',icon:'❄️',time:'8 دق',exercises:ANK_AFT_LOWER},
+        {label:'Core 🧱',icon:'🧱',time:'10 دق',exercises:getCore('sat',5)},
+      ],note:'ركّزي على اليسار.',exit:EXIT},
+    sun:{label:'الأحد',en:'SUN',cond:'المشي طبيعي، لا انتفاخ جديد، ألم الكاحل 0–2/10.',
+      sections:[
+        {label:'إحماء السرعة',icon:'🔥',time:'10 دق',exercises:WU_SPEED},
+        {label:'كاحل قبل السرعة',icon:'🦶',time:'8 دق',exercises:ANK_SPEED},
+        {label:'🚀 First Step — التسارع',icon:'🚀',time:'20 دق',exercises:[
+          ex('Wall Drive Hold','يد على الجدار — ميلان 45° — ثبّتي','3','5ث','تعلّمي زاوية الانطلاق الصحيحة'),
+          ex('Falling Start','ميلي للأمام وانطلقي','4','10m','الجاذبية تشغّل الخطوة الأولى'),
+          ex('3-Point Stance Start','يد أرض — انطلقي بأقصى قوة','4','10m','ركّزي على الخطوتين الأوليتين'),
+          ex('Resisted Sprint بمطاط','بند على الوسط','4','10m'),
+          ex('Assisted / Release Sprint','بعد الـ Resisted','3','15m'),
+        ]},
+        {label:'السرعة',icon:'⚡',time:'15 دق',exercises:[
+          ex('Wall Drill','','3','15ث'),
+          ex('10m Sprint','4 مرات — راحة 90ث','4','10m'),
+          ex('20m Sprint','','4','20m'),
+          ex('Flying 10m','ابدئي بـ 20m بناء ثم اقيسي الوسطى','3','10m'),
+          ex('15m Sprint ثم Stop','','4','15m'),
+        ]},
+        {label:'Upper A — الحديد',icon:'🏋️',time:'30 دق',exercises:[
+          str('Landmine Press','','4','6 لكل'),
+          str('One-Arm DB Row','','4','8 لكل'),
+          str('DB Bench Press','','4','6'),
+          str('Lat Pulldown','','3','8'),
+          str('Face Pull','','3','15'),
+          str('Serratus Wall Slide','','2','12'),
+          str('Suitcase Carry','','3','25m لكل'),
+        ]},
+        {label:'بعد التمرين',icon:'❄️',time:'8 دق',exercises:ANK_AFT_SPEED},
+      ],note:'السبرنت بجودة.',exit:EXIT},
+    mon:{label:'الاثنين',en:'MON',cond:'المشي طبيعي، لا انتفاخ جديد، ألم الكاحل 0–2/10.',
+      sections:[
+        {label:'Zone 2',icon:'🏊',time:'25–35 دق',exercises:[ex('ركض خفيف أو دراجة أو سباحة','','1','25–35 دق','لا HIIT')]},
+        {label:'كاحل كامل',icon:'🦶',time:'12 دق',exercises:ANK_FULL},
+        {label:'Mobility كامل',icon:'🧘',time:'10 دق',exercises:MOB_FULL},
+      ],note:'تعافي حقيقي.',exit:EXIT},
+    tue:{label:'الثلاثاء',en:'TUE',cond:'المشي طبيعي، لا انتفاخ جديد، ألم الكاحل 0–2/10.',
+      sections:[
+        {label:'الإحماء',icon:'🔥',time:'10 دق',exercises:WU_LOWER},
+        {label:'كاحل قبل النط',icon:'🦶',time:'8 دق',exercises:ANK_LOWER},
+        {label:'Landing / Plyo',icon:'💥',time:'20 دق',exercises:[
+          ex('Approach Jump','خطوتان + قفز — محاكاة كرة السلة','3','4'),
+          ex('Broad Jump + Stick','قفزة للأمام + ثبات','3','3'),
+          ex('Lateral Bound Continuous','قفز جانبي متواصل','3','5 لكل'),
+          ex('Box Jump متوسط','','3','3'),
+        ]},
+        {label:'Lower B — الحديد',icon:'🏋️',time:'40 دق',exercises:[
+          str('Hip Thrust','','4','5'),
+          str('Step-up ثقيل','صندوق 20–25 سم مع وزن','3','6 لكل'),
+          str('Single-Leg RDL','','3','6 لكل'),
+          str('Lateral Lunge','','3','6 لكل'),
+          str('Seated Soleus Raise','','3','10'),
+          str('Copenhagen Plank','','3','20–25ث'),
+          str('Dead Bug','','3','8 لكل'),
+        ]},
+        {label:'بعد التمرين',icon:'❄️',time:'8 دق',exercises:ANK_AFT_LOWER},
+      ],note:'الهبوط أهم من القفز.',exit:EXIT},
+    wed:{label:'الأربعاء',en:'WED',cond:'المشي طبيعي، لا انتفاخ جديد، ألم الكاحل 0–2/10.',
+      sections:[
+        {label:'إحماء علوي',icon:'🔥',time:'8 دق',exercises:WU_UPPER},
+        {label:'كاحل خفيف',icon:'🦶',time:'6 دق',exercises:ANK_UPPER_L},
+        {label:'Upper B — الحديد',icon:'🏋️',time:'30 دق',exercises:[
+          str('Pulldown أو Assisted Pull-up','','4','6'),
+          str('Neutral Grip DB Shoulder Press','','3','6–8'),
+          str('Cable Row','','4','8'),
+          str('Incline DB Press أو Push-up','','3','8'),
+          str('Farmer Carry','','4','25m'),
+          str('Face Pull','','2','15'),
+          str('Band External Rotation','','2','15'),
+        ]},
+        {label:'Core 🧱',icon:'🧱',time:'10 دق',exercises:getCore('wed',5)},
+        {label:'Conditioning — Repeated Sprints',icon:'🏀',time:'15 دق',exercises:[
+          ex('Repeated Sprint Ability','2–3 Sets: 6 × 20m سبرنت','2–3','sets','راحة 20–25ث بين السبرنتات + 3 دق بين الـ Sets'),
+        ]},
+        {label:'بعد التمرين',icon:'❄️',time:'8 دق',exercises:ANK_AFT_UPPER},
+        {label:'Core 🧱',icon:'🧱',time:'10 دق',exercises:[ex('Half-Kneeling Cable Chop','قطع مائل من ركبة واحدة','3','8 لكل جهة'),ex('Front Plank Shoulder Tap','','3','12 لكل جهة'),ex('Suitcase Carry ثقيل','','4','25 متر لكل جهة'),ex('Copenhagen Plank','','3','20ث لكل جهة')]},
+      ],note:'إذا عندك باسكت قوي — شيلي الـ Conditioning.',exit:EXIT},
+    thu:{label:'الخميس',en:'THU',cond:'المشي طبيعي، لا انتفاخ جديد، ألم الكاحل 0–2/10.',
+      sections:[
+        {label:'إحماء باسكت',icon:'🔥',time:'10 دق',exercises:WU_BBALL},
+        {label:'كاحل قبل الباور',icon:'🦶',time:'8 دق',exercises:ANK_BBALL},
+        {label:'Power / COD',icon:'💥',time:'20 دق',exercises:[
+          ex('45° Cut','','4','لكل'),
+          ex('Closeout + Backpedal','','—','4 مرات'),
+          ex('Shuffle Sprint →','','—','4 مرات'),
+          ex('Sprint → Decel → Re-accelerate','','—','4 مرات'),
+          ex('Lateral Bound + Stick','','3','3 لكل'),
+        ]},
+        {label:'Basketball Skills',icon:'🏀',time:'30 دق',exercises:[
+          ex('Ball Handling بسرعة أعلى','','—','10 دق'),
+          ex('Finishing يمين/يسار','','—','15 دق'),
+          ex('Pull-up off Screen Footwork','','4','6'),
+          ex('Catch & Shoot','','5','6 تصويبات'),
+          ex('Free Throws تحت تعب','','—','30'),
+        ]},
+        {label:'بعد التمرين',icon:'❄️',time:'8 دق',exercises:ANK_AFT_BBALL},
+      ],note:'لا تبالغي إذا الكاحل تعب.',exit:EXIT},
+    fri:{label:'الجمعة',en:'FRI',isRest:true,
+      sections:[
+        {label:'راحة',icon:'🛌',time:'اختياري',exercises:[ex('مشي خفيف','','—','20–30 دق')]},
+        {label:'كاحل خفيف',icon:'🦶',time:'8 دق',exercises:FRI_ANK},
+        {label:'Mobility خفيف',icon:'🧘',time:'8 دق',exercises:MOB_LIGHT},
+        {label:'Core خفيف 🧱',icon:'🧱',time:'اختياري',exercises:getCore('fri',5)},
+        {label:'فحص سريع',icon:'📋',time:'2 دق',exercises:FRI_CHK},
+      ],exit:''},
+  }
+},
+
+7:{phase:4,label:'أداء',phaseLabel:'P4 — Performance Week',phaseColor:'#2d6a4f',rpe:'7–8 RPE (حجم أقل)',
+  goal:'أداء وجودة. لا نزيد الحجم — نبي جسمك يحس بالسرعة والثقة. حجم أقل وجودة أعلى.',
+  showTests:true,
+  days:{
+    sat:{label:'السبت',en:'SAT',cond:'المشي طبيعي، لا انتفاخ جديد، ألم الكاحل 0–2/10.',
+      sections:[
+        {label:'الإحماء',icon:'🔥',time:'10 دق',exercises:WU_LOWER},
+        {label:'كاحل قبل الحديد',icon:'🦶',time:'10 دق',exercises:ANK_LOWER},
+        {label:'Lower A — الحديد',icon:'🏋️',time:'40 دق',exercises:[
+          str('Trap Bar Deadlift','حجم أقل — جودة أعلى','3','3'),
+          str('Front Squat','','3–4','3'),
+          str('Split Squat','','3','5 لكل'),
+          str('Hip Thrust','','3','5'),
+          str('Heavy Calf Raise','','3','8'),
+          str('Seated Soleus Raise','','2','10'),
+          str('Pallof Press','','3','10 لكل'),
+        ]},
+        {label:'بعد التمرين',icon:'❄️',time:'8 دق',exercises:ANK_AFT_LOWER},
+        {label:'Core 🧱',icon:'🧱',time:'10 دق',exercises:getCore('sat',7)},
+      ],note:'ركّزي على الثقة باليسار.',exit:EXIT},
+    sun:{label:'الأحد',en:'SUN',cond:'المشي طبيعي، لا انتفاخ جديد، ألم الكاحل 0–2/10.',
+      sections:[
+        {label:'إحماء السرعة',icon:'🔥',time:'10 دق',exercises:WU_SPEED},
+        {label:'كاحل قبل السرعة',icon:'🦶',time:'8 دق',exercises:ANK_SPEED},
+        {label:'🚀 First Step — متقدم',icon:'🚀',time:'18 دق',exercises:[
+          ex('Falling Start','أسرع من أسبوع 5','4','10m'),
+          ex('Resisted Sprint + Release','سبرنت بمطاط ثم حرري — يعلّم الانفجار','4','15m'),
+          ex('Lateral Start → Sprint','من وضع دفاعي جانبي — انطلقي للأمام','4','10m','محاكاة حركة الملعب'),
+          ex('Reactive First Step','رفيقة تعطيك إشارة يمين/يسار/أمام — انطلقي فوراً','5','—','⭐ الأهم في الباسكت'),
+        ]},
+        {label:'السرعة',icon:'⚡',time:'15 دق',exercises:[
+          ex('10m Sprint','4 مرات — راحة 90ث','4','10m'),
+          ex('20m Sprint','','4','20m'),
+          ex('Reactive Start','إشارة صوتية أو حركية','4','—'),
+          ex('Sprint + Stop','سبرنت ثم وقوف بتحكم','4','—'),
+        ]},
+        {label:'Upper A — الحديد',icon:'🏋️',time:'25 دق',exercises:[
+          str('Landmine Press','','3','6 لكل'),
+          str('One-Arm DB Row','','3','8 لكل'),
+          str('DB Bench Press','','3','6'),
+          str('Lat Pulldown','','3','8'),
+          str('Face Pull','','2','15'),
+          str('Serratus Wall Slide','','2','12'),
+          str('Suitcase Carry','','3','20m'),
+        ]},
+        {label:'بعد التمرين',icon:'❄️',time:'8 دق',exercises:ANK_AFT_SPEED},
+      ],note:'السبرنت بجودة.',exit:EXIT},
+    mon:{label:'الاثنين',en:'MON',cond:'المشي طبيعي، لا انتفاخ جديد، ألم الكاحل 0–2/10.',
+      sections:[
+        {label:'Zone 2',icon:'🏊',time:'25–35 دق',exercises:[ex('ركض أو دراجة أو سباحة','','1','25–35 دق','لا HIIT')]},
+        {label:'كاحل كامل',icon:'🦶',time:'12 دق',exercises:ANK_FULL},
+        {label:'Mobility كامل',icon:'🧘',time:'10 دق',exercises:MOB_FULL},
+      ],note:'تعافي حقيقي.',exit:EXIT},
+    tue:{label:'الثلاثاء',en:'TUE',cond:'المشي طبيعي، لا انتفاخ جديد، ألم الكاحل 0–2/10.',
+      sections:[
+        {label:'الإحماء',icon:'🔥',time:'10 دق',exercises:WU_LOWER},
+        {label:'كاحل قبل النط',icon:'🦶',time:'8 دق',exercises:ANK_LOWER},
+        {label:'Landing / Plyo',icon:'💥',time:'18 دق',exercises:[
+          ex('Countermovement Jump','','3','3'),
+          ex('Approach Jump','','2','4'),
+          ex('Lateral Bound Stick','','3','3 لكل'),
+          ex('Low Depth Drop','فقط إذا الكاحل ممتاز','2','3','إذا فيه أي تردد — اتركيه'),
+        ]},
+        {label:'Lower B — الحديد',icon:'🏋️',time:'35 دق',exercises:[
+          str('Hip Thrust','','3','5'),
+          str('Step-up','','3','5 لكل'),
+          str('Single-Leg RDL','','3','6 لكل'),
+          str('Lateral Lunge','','2','6 لكل'),
+          str('Seated Soleus Raise','','2','10'),
+          str('Copenhagen Plank','','2','25ث'),
+        ]},
+        {label:'بعد التمرين',icon:'❄️',time:'8 دق',exercises:ANK_AFT_LOWER},
+      ],note:'الهبوط أهم من القفز.',exit:EXIT},
+    wed:{label:'الأربعاء',en:'WED',cond:'المشي طبيعي، لا انتفاخ جديد، ألم الكاحل 0–2/10.',
+      sections:[
+        {label:'إحماء علوي',icon:'🔥',time:'8 دق',exercises:WU_UPPER},
+        {label:'كاحل خفيف',icon:'🦶',time:'6 دق',exercises:ANK_UPPER_L},
+        {label:'Upper B — الحديد',icon:'🏋️',time:'25 دق',exercises:[
+          str('Pulldown','','3','6'),
+          str('Neutral Grip DB Shoulder Press','','3','6'),
+          str('Cable Row','','3','8'),
+          str('Push-up','','3','8'),
+          str('Farmer Carry','','3','20m'),
+          str('Face Pull','','2','15'),
+          str('Band External Rotation','','2','15'),
+        ]},
+        {label:'Core 🧱',icon:'🧱',time:'10 دق',exercises:getCore('wed',7)},
+        {label:'Basketball Conditioning Hard',icon:'🏀',time:'12 دق',exercises:[
+          ex('Basketball Conditioning','6 × 30ث hard — راحة 90ث','6','30ث','Closeout + Shuffle + Sprint + Backpedal'),
+        ]},
+        {label:'بعد التمرين',icon:'❄️',time:'8 دق',exercises:ANK_AFT_UPPER},
+        {label:'Core 🧱',icon:'🧱',time:'10 دق',exercises:[ex('Cable Chop','','3','8 لكل جهة'),ex('Suitcase Carry','','3','25 متر لكل جهة'),ex('Copenhagen Plank','','2','25ث لكل جهة'),ex('Front Plank Shoulder Tap','','2','10 لكل جهة')]},
+      ],note:'إذا عندك باسكت قوي — شيلي الـ Conditioning.',exit:EXIT},
+    thu:{label:'الخميس',en:'THU',cond:'المشي طبيعي، لا انتفاخ جديد، ألم الكاحل 0–2/10.',
+      sections:[
+        {label:'إحماء باسكت',icon:'🔥',time:'10 دق',exercises:WU_BBALL},
+        {label:'كاحل قبل الباور',icon:'🦶',time:'8 دق',exercises:ANK_BBALL},
+        {label:'Power / COD',icon:'💥',time:'20 دق',exercises:[
+          ex('5-10-5 Pro Agility','يمين 5م — يسار 10م — يمين 5م','3','—'),
+          ex('Closeout → Cut → Sprint','','—','4 مرات'),
+          ex('Shuffle Sprint →','','—','4 مرات'),
+          ex('Sprint → Decel → Backpedal','','—','4 مرات'),
+        ]},
+        {label:'Basketball Skills',icon:'🏀',time:'30 دق',exercises:[
+          ex('Ball Handling Game Speed','','—','10 دق'),
+          ex('Finishing تحت تعب خفيف','','—','15 دق'),
+          ex('Pull-up Jumpers','','5','5'),
+          ex('Catch & Shoot','','5','6 تصويبات'),
+          ex('Free Throws','','—','30'),
+        ]},
+        {label:'بعد التمرين',icon:'❄️',time:'8 دق',exercises:ANK_AFT_BBALL},
+      ],note:'لا تبالغي إذا الكاحل تعب.',exit:EXIT},
+    fri:{label:'الجمعة',en:'FRI',isRest:true,
+      sections:[
+        {label:'راحة',icon:'🛌',time:'اختياري',exercises:[ex('مشي خفيف','','—','20–30 دق')]},
+        {label:'كاحل خفيف',icon:'🦶',time:'8 دق',exercises:FRI_ANK},
+        {label:'Mobility خفيف',icon:'🧘',time:'8 دق',exercises:MOB_LIGHT},
+        {label:'Core خفيف 🧱',icon:'🧱',time:'اختياري',exercises:getCore('fri',7)},
+        {label:'فحص سريع',icon:'📋',time:'2 دق',exercises:FRI_CHK},
+      ],exit:''},
+  }
+},
+
+8:{phase:5,label:'Deload + اختبار',phaseLabel:'P5 — Deload + Testing',phaseColor:'#1a4f7a',rpe:'5–7 RPE',
+  goal:'Deload واختبار. الهدف تخرجين أخف وأقوى — مو منهكة. الحجم أخف ونفحص التقدم.',
+  showTests:true,
+  days:{
+    sat:{label:'السبت',en:'SAT',cond:'المشي طبيعي، لا انتفاخ جديد، ألم الكاحل 0–2/10.',
+      sections:[
+        {label:'الإحماء',icon:'🔥',time:'10 دق',exercises:WU_LOWER},
+        {label:'كاحل قبل الحديد',icon:'🦶',time:'10 دق',exercises:ANK_LOWER},
+        {label:'Lower A — Deload',icon:'🏋️',time:'30 دق',exercises:[
+          str('Trap Bar Deadlift','60% من الأقصى','3','3'),
+          str('Front Squat','خفيف–متوسط','3','4'),
+          str('Split Squat','','2','6 لكل'),
+          str('Hip Thrust','','2','6'),
+          str('Calf Raise','','2','10'),
+          str('Soleus Raise','','2','10'),
+        ]},
+        {label:'بعد التمرين',icon:'❄️',time:'8 دق',exercises:ANK_AFT_LOWER},
+        {label:'Core 🧱',icon:'🧱',time:'10 دق',exercises:getCore('sat',8)},
+      ],note:'الحجم أقل — ركّزي على الجودة والثقة.',exit:EXIT},
+    sun:{label:'الأحد',en:'SUN',cond:'المشي طبيعي، لا انتفاخ جديد، ألم الكاحل 0–2/10.',
+      sections:[
+        {label:'إحماء السرعة',icon:'🔥',time:'10 دق',exercises:WU_SPEED},
+        {label:'كاحل قبل السرعة',icon:'🦶',time:'8 دق',exercises:ANK_SPEED},
+        {label:'السرعة — Deload',icon:'⚡',time:'15 دق',exercises:[
+          ex('10m Sprint','3 مرات','3','10m'),
+          ex('20m Sprint','3 مرات','3','20m'),
+          ex('15m Deceleration','3 مرات','3','15m'),
+          ex('Reactive Start','3 مرات','3','—'),
+        ]},
+        {label:'Upper A — Deload',icon:'🏋️',time:'25 دق',exercises:[
+          str('Landmine Press','','2','6 لكل'),
+          str('One-Arm DB Row','','2','8 لكل'),
+          str('DB Bench Press','','2','6'),
+          str('Lat Pulldown','','2','8'),
+          str('Face Pull','','2','15'),
+          str('Band External Rotation','','2','15'),
+        ]},
+        {label:'بعد التمرين',icon:'❄️',time:'8 دق',exercises:ANK_AFT_SPEED},
+      ],note:'حجم أقل. جودة وثقة.',exit:EXIT},
+    mon:{label:'الاثنين',en:'MON',cond:'المشي طبيعي، لا انتفاخ جديد، ألم الكاحل 0–2/10.',
+      sections:[
+        {label:'Zone 2 — خفيف',icon:'🏊',time:'20–25 دق',exercises:[ex('مشي سريع أو دراجة أو سباحة','أسبوع 8 — أخف','1','20–25 دق')]},
+        {label:'كاحل كامل',icon:'🦶',time:'12 دق',exercises:ANK_FULL},
+        {label:'Mobility كامل',icon:'🧘',time:'10 دق',exercises:MOB_FULL},
+      ],note:'تعافي كامل.',exit:EXIT},
+    tue:{label:'الثلاثاء',en:'TUE',cond:'المشي طبيعي، لا انتفاخ جديد، ألم الكاحل 0–2/10.',
+      sections:[
+        {label:'الإحماء',icon:'🔥',time:'10 دق',exercises:WU_LOWER},
+        {label:'كاحل قبل النط',icon:'🦶',time:'8 دق',exercises:ANK_LOWER},
+        {label:'Landing / Plyo — Deload',icon:'💥',time:'15 دق',exercises:[
+          ex('Countermovement Jump','','3','3'),
+          ex('Approach Jump','','2','3'),
+          ex('Lateral Bound Stick','','2','3 لكل'),
+          ex('Single-Leg Hop + Stick','فقط إذا الكاحل ممتاز','2','3 لكل','⭐ قيسي المسافة'),
+        ]},
+        {label:'Lower B — Deload',icon:'🏋️',time:'25 دق',exercises:[
+          str('Step-up','','2','6 لكل'),
+          str('Single-Leg RDL','','2','6 لكل'),
+          str('Lateral Lunge','','2','6'),
+          str('Seated Soleus Raise','','2','10'),
+          str('Dead Bug','','2','8 لكل'),
+        ]},
+        {label:'بعد التمرين',icon:'❄️',time:'8 دق',exercises:ANK_AFT_LOWER},
+      ],note:'حجم أقل بكثير — تعافي وقياس.',exit:EXIT},
+    wed:{label:'الأربعاء',en:'WED',cond:'المشي طبيعي، لا انتفاخ جديد، ألم الكاحل 0–2/10.',
+      sections:[
+        {label:'إحماء علوي',icon:'🔥',time:'8 دق',exercises:WU_UPPER},
+        {label:'كاحل خفيف',icon:'🦶',time:'6 دق',exercises:ANK_UPPER_L},
+        {label:'Upper B — Deload',icon:'🏋️',time:'20 دق',exercises:[
+          str('Pulldown','','2','8'),
+          str('DB Shoulder Press خفيف','','2','8'),
+          str('Cable Row','','2','8'),
+          str('Push-up','','2','8'),
+          str('Farmer Carry','','2','20m'),
+          str('Face Pull','','2','15'),
+          str('Band External Rotation','','2','15'),
+        ]},
+        {label:'Core 🧱',icon:'🧱',time:'10 دق',exercises:getCore('wed',8)},
+        {label:'Conditioning خفيف',icon:'🏀',time:'10 دق',exercises:[
+          ex('Light Intervals','6 × 15ث hard / 45ث easy','6','—','لا تزيدي عن هذا في أسبوع 8'),
+        ]},
+        {label:'بعد التمرين',icon:'❄️',time:'8 دق',exercises:ANK_AFT_UPPER},
+        {label:'Core 🧱',icon:'🧱',time:'10 دق',exercises:[ex('Bird Dog','','2','8 لكل جهة'),ex('Suitcase Carry خفيف','','2','20 متر لكل جهة'),ex('90/90 Breathing','تنفس عميق','2','5 أنفاس')]},
+      ],note:'لا تزيدي الحجم هذا الأسبوع.',exit:EXIT},
+    thu:{label:'الخميس',en:'THU',cond:'المشي طبيعي، لا انتفاخ جديد، ألم الكاحل 0–2/10.',
+      sections:[
+        {label:'إحماء باسكت',icon:'🔥',time:'10 دق',exercises:WU_BBALL},
+        {label:'كاحل قبل الباور',icon:'🦶',time:'8 دق',exercises:ANK_BBALL},
+        {label:'Power / COD — Deload',icon:'💥',time:'15 دق',exercises:[
+          ex('Closeout + Stop','','3','—'),
+          ex('Shuffle Sprint','','3','—'),
+          ex('Sprint → Decel','','3','—'),
+          ex('Cut يمين/يسار','','3','لكل'),
+        ]},
+        {label:'Basketball Skills',icon:'🏀',time:'30 دق',exercises:[
+          ex('Ball Handling','','—','10 دق'),
+          ex('Finishing','','—','10–15 دق'),
+          ex('Pull-up Jumpers','','3','5 لكل'),
+          ex('Catch & Shoot','','5','5 تصويبات'),
+          ex('Free Throws','','—','20'),
+        ]},
+        {label:'بعد التمرين',icon:'❄️',time:'8 دق',exercises:ANK_AFT_BBALL},
+      ],note:'لا تبالغي. هذا أسبوع تعافي.',exit:EXIT},
+    fri:{label:'الجمعة',en:'FRI',isRest:true,
+      sections:[
+        {label:'راحة نهائية',icon:'🎯',time:'اختياري',exercises:[ex('مشي خفيف اختياري','','—','20–30 دق','لا جري ولا قفز')]},
+        {label:'كاحل خفيف',icon:'🦶',time:'8 دق',exercises:FRI_ANK},
+        {label:'Mobility خفيف',icon:'🧘',time:'8 دق',exercises:MOB_LIGHT},
+        {label:'Core خفيف 🧱',icon:'🧱',time:'اختياري',exercises:getCore('fri',8)},
+        {label:'الاختبار النهائي 🏆',icon:'📊',time:'15 دق',exercises:[
+          ex('Knee-to-Wall يسار vs يمين','سجّلي المسافة لكل رجل','—','قيسي','هدف: تقليل الفرق'),
+          ex('Single-Leg Calf Raise','20–25 تكرار نظيف','—','حتى التعب','قارني اليسار باليمين'),
+          ex('Single-Leg Balance','30 ثانية بثبات','—','بدون انهيار'),
+          ex('Single-Leg Hop + Stick','قيسي المسافة','3','لكل','هدف: فرق < 10%'),
+          ex('مراقبة بعد التمرين','لا انتفاخ، لا عرج، لا ألم يزيد','—','—','✅'),
+        ]},
+      ],exit:''},
+  }
+},
+};
+
+// Fill even weeks
+WEEKS[2]={...WEEKS[1],label:'التأسيس+',phaseLabel:'P1 — تأسيس+',note:'أسبوع 2: إذا لا ألم — زيدي وزن 2.5–5%.',goal:'نفس هيكل الأسبوع الأول. إذا لا ألم ولا انتفاخ — زيدي وزن بسيط 2.5–5%.',showTests:false};
+WEEKS[4]={...WEEKS[3],label:'تثبيت القوة',phaseLabel:'P2 — تثبيت القوة',goal:'حاولي تثبّتي نفس الجودة مع زيادة بسيطة في الحمل أو السرعة.',showTests:true};
+WEEKS[6]={...WEEKS[5],label:'ذروة الحمل',phaseLabel:'P3 — أعلى حمل',rpe:'7–8.5 RPE',goal:'أعلى أسبوع حمل تقريباً. راقبي الكاحل بعد كل تمرين.',showTests:true};
+
+// ════════════════════════════════════════════════════
+// SETS STATE
+// ════════════════════════════════════════════════════
+const SK='hessa_v4';
+let ST={};
+function load(){try{const r=localStorage.getItem(SK);if(r)ST=JSON.parse(r);}catch{}}
+function save(){try{localStorage.setItem(SK,JSON.stringify(ST));}catch{}}
+
+function getKey(w,di,si,ei){return`${w}_${di}_${si}_${ei}`;}
+function getSets(key){return ST[key]||{unit:'kg',metric:'Reps',et:'Each',sets:[]};}
+
+function initSets(key){if(!ST[key])ST[key]={unit:'kg',metric:'Reps',et:'Each',sets:[]};}
+function setField(key,f,v){initSets(key);ST[key][f]=v;save();}
+function setSetsCount(key,n){
+  initSets(key);
+  const old=ST[key].sets;
+  ST[key].sets=Array.from({length:n},(_,i)=>old[i]||{v1:'',v2:'',done:false});
+  save();
+}
+function setSetVal(key,si,f,v){initSets(key);ST[key].sets[si][f]=v;save();}
+function toggleSetDone(key,si){
+  initSets(key);const s=ST[key].sets[si];s.done=!s.done;save();
+  const btn=document.getElementById(`sd_${key}_${si}`);
+  const r=btn&&btn.closest('.set-row');
+  if(btn){btn.classList.toggle('done',s.done);btn.textContent=s.done?'✓':'○';}
+  if(r){r.querySelectorAll('.set-inp').forEach(i=>i.classList.toggle('done',s.done));}
+}
+
+// ════════════════════════════════════════════════════
+// BUILD HTML
+// ════════════════════════════════════════════════════
+
+
+const DAYS_ORDER=['sat','sun','mon','tue','wed','thu','fri'];
+const PHASE_STARTS={1:1,2:3,3:5,4:7,5:8};
+let curWeek=1;
+
+// ════════════════════════════════════════════════════
+// BUILD DAY SECTIONS — injects new blocks in correct order
+// ════════════════════════════════════════════════════
+function buildDaySectionsInto(emit, baseSections, dk, wn, di){
+  // Helper: build a synthetic section with auto-index offset
+  let si=0;
+  function sec(label,icon,time,exercises){
+    const s={label,icon,time,exercises};
+    emit(buildSection(s,si++,wn,di));
+  }
+  function baseSec(idx){ sec(baseSections[idx].label,baseSections[idx].icon,baseSections[idx].time,baseSections[idx].exercises); }
+  function allBase(){ baseSections.forEach((_,i)=>baseSec(i)); }
+
+  const foot={label:'Foot / Flat-Foot Control',icon:'🦶',time:'8 دق',exercises:getFoot(wn)};
+  const fsLabel=wn<=2?'First Step خفيف':wn<=4?'First Step — بناء القوة':wn<=6?'First Step — Acceleration':wn===7?'First Step متقدم':'First Step Deload';
+  const descLabel=wn<=2?'Descending & Landing — المرحلة الأولى':wn<=4?'Descending & Landing — ارتفاع بسيط':wn<=6?'Descending & Landing — قريب من الباسكت':wn===7?'Landing Confidence — متقدم':'Landing Check — Deload';
+
+  if(dk==='sat'){
+    // إحماء → كاحل → Foot Control → Lower A → بعد التمرين
+    baseSec(0); // إحماء
+    baseSec(1); // كاحل
+    sec(foot.label,foot.icon,foot.time,foot.exercises);
+    for(let i=2;i<baseSections.length;i++) baseSec(i);
+
+  } else if(dk==='sun'){
+    // إحماء → كاحل → Foot Control → First Step → السرعة → Upper → بعد
+    baseSec(0); // إحماء السرعة
+    baseSec(1); // كاحل
+    sec(foot.label,foot.icon,foot.time,foot.exercises);
+    sec(fsLabel,'🚀','15–20 دق',getFS_Sun(wn));
+    for(let i=2;i<baseSections.length;i++) baseSec(i);
+
+  } else if(dk==='mon'){
+    // Zone 2 → كاحل → Foot Control → Mobility
+    baseSec(0); // Zone 2
+    baseSec(1); // كاحل كامل
+    sec(foot.label,foot.icon,foot.time,foot.exercises);
+    for(let i=2;i<baseSections.length;i++) baseSec(i);
+
+  } else if(dk==='tue'){
+    // إحماء → كاحل → Foot Control → Descending → Plyo → Lower B → بعد
+    baseSec(0); // إحماء
+    baseSec(1); // كاحل
+    sec(foot.label,foot.icon,foot.time,foot.exercises);
+    sec(descLabel,'🪜','15–20 دق',getDesc_Tue(wn));
+    for(let i=2;i<baseSections.length;i++) baseSec(i);
+
+  } else if(dk==='wed'){
+    // إحماء → كاحل → Foot Control → Upper B → Conditioning → بعد
+    baseSec(0); // إحماء
+    baseSec(1); // كاحل
+    sec(foot.label,foot.icon,foot.time,foot.exercises);
+    for(let i=2;i<baseSections.length;i++) baseSec(i);
+
+  } else if(dk==='thu'){
+    // إحماء → كاحل → Foot Control → First Step باسكت → [Landing W7+8] → Power → Basketball → بعد
+    baseSec(0); // إحماء
+    baseSec(1); // كاحل
+    sec(foot.label,foot.icon,foot.time,foot.exercises);
+    sec(fsLabel+' باسكت','🏀','15 دق',getFS_Thu(wn));
+    const landingMicro=getDesc_Thu(wn);
+    if(landingMicro) sec('Landing Micro-dose','🪜','10 دق',landingMicro);
+    for(let i=2;i<baseSections.length;i++) baseSec(i);
+
+  } else if(dk==='fri'){
+    // راحة → كاحل → Foot Control خفيف → Descending Optional → Mobility → فحص
+    baseSec(0); // راحة
+    baseSec(1); // كاحل
+    sec('Foot Control خفيف','🦶','6 دق',getFoot(wn).slice(0,3));
+    sec('Descending Exposure اختياري','🪜','10 دق',getDesc_Fri(wn));
+    for(let i=2;i<baseSections.length;i++) baseSec(i);
+  }
+}
+
+
+function buildWeek(wn){
+  const W=WEEKS[wn];
+  const savedDate=ST[`date_from_${wn}`]||'';
+  const savedDateTo=ST[`date_to_${wn}`]||'';
+  let h=`<div class="week-view" id="week-${wn}">`;
+  h+=`<div class="wk-hdr">
+    <div class="wk-top"><div><div class="wk-num">أسبوع ${wn} من 8</div><div class="wk-title">${W.label}</div></div><div class="wk-badge" style="background:${W.phaseColor}">${W.phaseLabel}</div></div>
+    <div class="wk-date-row">
+      <label>📅 من</label>
+      <input type="date" class="wk-date-inp" value="${savedDate}" onchange="ST['date_from_${wn}']=this.value;save()">
+      <label>إلى</label>
+      <input type="date" class="wk-date-inp" value="${savedDateTo}" onchange="ST['date_to_${wn}']=this.value;save()">
+    </div>
+    <div class="wk-goal">${W.goal}</div><div class="wk-rpe">${W.rpe}</div>
+  </div>`;
+  if(W.showTests) h+=`<div class="tests-bar">📊 <strong>اختبارات كل أسبوعين:</strong> Knee-to-Wall · Single-Leg Calf Raise (20–25) · Single-Leg Balance (30ث) · Hop + Stick Landing · لا انتفاخ بعد التمرين.</div>`;
+  h+=`<div class="day-tabs">`;
+  DAYS_ORDER.forEach((dk,i)=>{
+    const d=W.days[dk];
+    h+=`<button class="day-tab ${i===0?'active':''} ${d.isRest?'rest':''}" onclick="showDay(${wn},${i})" id="dt-${wn}-${i}">${d.label}<span class="dt-sub">${d.en}</span></button>`;
+  });
+  h+=`</div>`;
+  DAYS_ORDER.forEach((dk,di)=>{
+    const d=W.days[dk];
+    const total=d.sections.reduce((s,sec)=>s+sec.exercises.length,0);
+    const isDone=ST[`done_${wn}_${di}`]||false;
+    h+=`<div class="day-content ${di===0?'active':''}" id="dc-${wn}-${di}">`;
+    if(d.cond) h+=`<div class="cond-box">📋 <strong>شرط اليوم:</strong> ${d.cond}</div>`;
+    h+=`<div class="prog-wrap"><div class="prog-lbl" id="pl-${wn}-${di}">0 / ${total} تمارين</div><div class="prog-bar"><div class="prog-fill" id="pf-${wn}-${di}"></div></div></div>`;
+    // Build ordered sections with new injected blocks
+    buildDaySectionsInto(h_ref=>{h+=h_ref;}, d.sections, dk, wn, di);
+    if(d.note) h+=`<div class="note-bar">📌 ${d.note}</div>`;
+    if(d.exit) h+=`<div class="exit-bar">${d.exit}</div>`;
+    h+=`<button class="mark-done-btn ${isDone?'done':'idle'}" id="mdb-${wn}-${di}" onclick="toggleDayDone(${wn},${di})">${isDone?'✓ اليوم تم':'✓ خلصت اليوم'}</button>`;
+    h+=`</div>`;
+  });
+  h+=`</div>`;
+  return h;
+}
+
+function secClass(label){
+  const l=label.toLowerCase();
+  if(l.includes('core')||l.includes('كور')) return 'sec-core';
+  if(l.includes('foot')||l.includes('flat')) return 'sec-foot';
+  if(l.includes('descend')||l.includes('landing conf')||l.includes('landing check')||l.includes('landing micro')||l.includes('نزول')) return 'sec-descend';
+  if(l.includes('إحماء')||l.includes('warmup')||l.includes('warm')) return 'sec-warmup';
+  if(l.includes('بعد')&&l.includes('كاحل')) return 'sec-ankle-after';
+  if(l.includes('كاحل')) return 'sec-ankle';
+  if(l.includes('lower')||l.includes('upper')||l.includes('الحديد')||l.includes('strength')||l.includes('deload')) return 'sec-strength';
+  if(l.includes('plyo')||l.includes('landing')||l.includes('نط')) return 'sec-plyo';
+  if(l.includes('first step')||l.includes('سرعة')||l.includes('speed')||l.includes('تسارع')||l.includes('sprint')||l.includes('acceleration')) return 'sec-speed';
+  if(l.includes('power')||l.includes('cod')||l.includes('باور')) return 'sec-power';
+  if(l.includes('basketball')||l.includes('باسكت')||l.includes('skill')||l.includes('conditioning')) return 'sec-bball';
+  if(l.includes('cardio')||l.includes('لياقة')) return 'sec-cardio';
+  if(l.includes('recovery')||l.includes('استشفاء')||l.includes('zone')) return 'sec-recovery';
+  if(l.includes('mobility')||l.includes('موبيلتي')) return 'sec-mobility';
+  if(l.includes('core')||l.includes('كور')) return 'sec-core';
+  if(l.includes('check')||l.includes('فحص')||l.includes('اختبار')) return 'sec-check';
+  return 'sec-strength';
+}
+
+function buildSection(sec,si,wn,di){
+  const open=si===0;
+  const sc=secClass(sec.label);
+  let h=`<div class="sec-wrap ${sc}"><div class="sec-head ${open?'open':''}" onclick="toggleSec(this)">
+    <span class="sec-icon">${sec.icon}</span>
+    <span class="sec-label">${sec.label}</span>
+    <span class="sec-time">${sec.time}</span>
+    <span class="sec-arr ${open?'open':''}">▼</span>
+  </div><div class="sec-body ${open?'open':''}">`;
+  h+=`<div class="sec-col-hdr"><div style="padding-right:12px"></div><div class="sch-vol" style="display:flex;flex-direction:column;align-items:center;justify-content:center;gap:1px"><span style="font-weight:700;color:var(--text)">Reps</span><span style="font-size:8px;color:var(--muted)">Sets</span></div><div class="sch-chk">✓</div></div>`;
+  sec.exercises.forEach((e,ei)=>{
+    if(e.isStr){ h+=buildStrRow(e,si,ei,wn,di); }
+    else { h+=buildExRow(e,si,ei,wn,di); }
+  });
+  h+=`</div></div>`;
+  return h;
+}
+
+function buildExRow(e,si,ei,wn,di){
+  const ck=`${wn}_${di}_${si}_${ei}`;
+  return `<div class="ex-row">
+    <div class="ex-info">
+      <div class="ex-name">${e.name}</div>
+      ${e.desc?`<div class="ex-desc">${e.desc}</div>`:''}
+      ${e.note?`<div class="ex-note-txt">${e.note}</div>`:''}
+    </div>
+    <div class="ex-vol">
+      <div class="ex-vol-num">${e.vol||'—'}</div>
+      <div class="ex-vol-sub">${e.sets||'—'}</div>
+    </div>
+    <div class="ex-chk"><input type="checkbox" id="chk_${ck}" onchange="updateProg(${wn},${di})"></div>
+  </div>`;
+}
+
+function buildStrRow(e,si,ei,wn,di){
+  const key=getKey(wn,di,si,ei);
+  const cs=getSets(key);
+  const sc=cs.sets.length;
+  const noteVal=(cs.note||'').replace(/"/g,'&quot;');
+  let h=`<div class="str-block">
+    <div class="str-header">
+      <div class="str-info">
+        <div class="str-name">${e.name}</div>
+        ${e.desc?`<div class="str-desc">${e.desc}</div>`:''}
+        ${e.note?`<div class="str-note">${e.note}</div>`:''}
+      </div>
+      <div class="str-vol"><div class="str-vol-num">${e.vol||'—'}</div><div class="str-vol-sub">${e.sets||'—'}</div></div>
+      <div class="str-chk"><input type="checkbox" id="chk_${key}" onchange="updateProg(${wn},${di})"></div>
+    </div>
+    <div class="sets-panel">
+      <div class="sp-row1">
+        <input type="number" class="wt-inp" placeholder="الوزن" value="${cs.weight||''}" oninput="setField('${key}','weight',this.value)">
+        <div class="sp-pills">
+          ${['kg','lb','Level'].map(u=>`<button class="unit-btn ${cs.unit===u?'on':''}" onclick="setSF('${key}','unit','${u}')">${u}</button>`).join('')}
+          <span class="sp-sep">|</span>
+          ${['Each','Total'].map(v=>`<button class="et-btn ${cs.et===v?'on':''}" onclick="setSF('${key}','et','${v}')">${v}</button>`).join('')}
+        </div>
+      </div>
+      <div class="sets-count-row">
+        <span class="sets-lbl">الستات:</span>
+        ${[1,2,3,4,5,6].map(n=>`<button class="sn-btn ${sc===n?'on':''}" onclick="setSC('${key}',${n})">${n}</button>`).join('')}
+      </div>`;
+  if(sc>0){
+    h+=`<div class="set-col-hdr"><div>ست</div><div>وزن (${cs.unit})</div><div>Reps</div><div></div></div>`;
+    cs.sets.forEach((st,stIdx)=>{
+      h+=`<div class="set-row">
+        <div class="set-n">${stIdx+1}</div>
+        <input type="number" class="set-inp ${st.done?'done':''}" placeholder="0" value="${st.v1||''}" oninput="setSV('${key}',${stIdx},'v1',this.value)">
+        <input type="number" class="set-inp ${st.done?'done':''}" placeholder="0" value="${st.v2||''}" oninput="setSV('${key}',${stIdx},'v2',this.value)">
+        <button class="set-done ${st.done?'done':''}" id="sd_${key}_${stIdx}" onclick="TSD('${key}',${stIdx})">${st.done?'✓':'○'}</button>
+      </div>`;
+    });
+  }
+  h+=`<input class="str-note-inp" placeholder="ملاحظة..." value="${noteVal}" oninput="setField('${key}','note',this.value)">`;
+  h+=`</div></div>`;
+  return h;
+}
+
+// shortcuts
+function setSF(k,f,v){setField(k,f,v);reRenderStr(k);}
+function setSC(k,n){setSetsCount(k,n);reRenderStr(k);}
+function setSV(k,si,f,v){setSetVal(k,si,f,v);}
+function TSD(k,si){toggleSetDone(k,si);}
+
+function reRenderStr(key){
+  const parts=key.split('_');
+  const wn=parseInt(parts[0]),di=parseInt(parts[1]),si=parseInt(parts[2]),ei=parseInt(parts[3]);
+  const panel=document.querySelector(`#dc-${wn}-${di} .str-block:nth-child(${ei+2}) .sets-panel`);
+  if(!panel)return;
+  const cs=getSets(key);
+  const sc=cs.sets.length;
+  const noteVal=(cs.note||'').replace(/"/g,'&quot;');
+  let h=`<div class="sp-row1">
+    <input type="number" class="wt-inp" placeholder="الوزن" value="${cs.weight||''}" oninput="setField('${key}','weight',this.value)">
+    <div class="sp-pills">
+      ${['kg','lb','Level'].map(u=>`<button class="unit-btn ${cs.unit===u?'on':''}" onclick="setSF('${key}','unit','${u}')">${u}</button>`).join('')}
+      <span class="sp-sep">|</span>
+      ${['Each','Total'].map(v=>`<button class="et-btn ${cs.et===v?'on':''}" onclick="setSF('${key}','et','${v}')">${v}</button>`).join('')}
+    </div>
+  </div>
+  <div class="sets-count-row">
+    <span class="sets-lbl">الستات:</span>
+    ${[1,2,3,4,5,6].map(n=>`<button class="sn-btn ${sc===n?'on':''}" onclick="setSC('${key}',${n})">${n}</button>`).join('')}
+  </div>`;
+  if(sc>0){
+    h+=`<div class="set-col-hdr"><div>ست</div><div>وزن (${cs.unit})</div><div>Reps</div><div></div></div>`;
+    cs.sets.forEach((st,stIdx)=>{
+      h+=`<div class="set-row">
+        <div class="set-n">${stIdx+1}</div>
+        <input type="number" class="set-inp ${st.done?'done':''}" placeholder="0" value="${st.v1||''}" oninput="setSV('${key}',${stIdx},'v1',this.value)">
+        <input type="number" class="set-inp ${st.done?'done':''}" placeholder="0" value="${st.v2||''}" oninput="setSV('${key}',${stIdx},'v2',this.value)">
+        <button class="set-done ${st.done?'done':''}" id="sd_${key}_${stIdx}" onclick="TSD('${key}',${stIdx})">${st.done?'✓':'○'}</button>
+      </div>`;
+    });
+  }
+  h+=`<input class="str-note-inp" placeholder="ملاحظة..." value="${noteVal}" oninput="setField('${key}','note',this.value)">`;
+  panel.innerHTML=h;
+}
+
+function toggleSec(head){
+  const open=head.classList.contains('open');
+  head.classList.toggle('open',!open);
+  const arr=head.querySelector('.sec-arr');
+  if(arr)arr.classList.toggle('open',!open);
+  head.nextElementSibling.classList.toggle('open',!open);
+}
+
+function updateProg(wn,di){
+  const c=document.getElementById(`dc-${wn}-${di}`);
+  const all=c.querySelectorAll('input[type=checkbox]');
+  const checked=c.querySelectorAll('input:checked').length;
+  const pct=Math.round(checked/all.length*100);
+  document.getElementById(`pf-${wn}-${di}`).style.width=pct+'%';
+  document.getElementById(`pl-${wn}-${di}`).textContent=`${checked} / ${all.length} تمارين`;
+}
+
+function toggleDayDone(wn,di){
+  const k=`done_${wn}_${di}`;
+  ST[k]=!ST[k];save();
+  const btn=document.getElementById(`mdb-${wn}-${di}`);
+  if(btn){
+    btn.classList.toggle('done',ST[k]);
+    btn.classList.toggle('idle',!ST[k]);
+    btn.textContent=ST[k]?'✓ اليوم تم':'✓ خلصت اليوم';
+  }
+}
+
+function showDay(wn,di){
+  DAYS_ORDER.forEach((_,i)=>{
+    document.getElementById(`dt-${wn}-${i}`).classList.toggle('active',i===di);
+    document.getElementById(`dc-${wn}-${i}`).classList.toggle('active',i===di);
+  });
+}
+
+function showWeek(wn){
+  document.querySelectorAll('.week-view').forEach(w=>w.classList.remove('active'));
+  document.getElementById(`week-${wn}`).classList.add('active');
+  const W=WEEKS[wn];
+  document.getElementById('topTitle').textContent=`حصه 🏀 — أسبوع ${wn}`;
+  const badge=document.getElementById('topBadge');
+  badge.style.display='block';
+  badge.style.background=W.phaseColor;
+  badge.textContent=`P${W.phase}`;
+  for(let p=1;p<=5;p++) document.getElementById(`pbtn-${p}`).classList.toggle('active',p===W.phase);
+  document.querySelectorAll('.week-pill').forEach((b,i)=>b.classList.toggle('active',i+1===wn));
+  const pill=document.getElementById(`wpill-${wn}`);
+  if(pill)pill.scrollIntoView({behavior:'smooth',block:'nearest',inline:'center'});
+  document.getElementById('navLbl').textContent=`أسبوع ${wn} / 8 — ${W.label}`;
+  document.getElementById('prevBtn').disabled=wn<=1;
+  document.getElementById('nextBtn').disabled=wn>=8;
+  curWeek=wn;
+  window.scrollTo(0,0);
+}
+
+function prevView(){if(curWeek>1)prevWeek();}
+function prevWeek(){if(curWeek>1)showWeek(curWeek-1);}
+function nextWeek(){if(curWeek<8)showWeek(curWeek+1);}
+function jumpPhase(p){showWeek(PHASE_STARTS[p]);}
+
+// ── INIT ──
+load();
+const main=document.getElementById('mainContent');
+for(let w=1;w<=8;w++) main.innerHTML+=buildWeek(w);
+const row=document.getElementById('weekRow');
+for(let w=1;w<=8;w++){
+  const b=document.createElement('button');
+  b.className='week-pill';
+  b.id=`wpill-${w}`;
+  b.textContent=`${w} — ${WEEKS[w].label}`;
+  b.onclick=()=>showWeek(w);
+  row.appendChild(b);
+}
+showWeek(1);
+</script>
+</body>
+</html>
